@@ -35,7 +35,9 @@ class _PageViewRouteState extends State<PageViewRoute> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PageView(controller: pageController, children: pageList),
+      body: PageView(
+          physics: NeverScrollableScrollPhysics(),
+          controller: pageController, children: pageList),
 
       bottomNavigationBar: Container(
         padding: EdgeInsets.all(10),
@@ -46,7 +48,9 @@ class _PageViewRouteState extends State<PageViewRoute> {
         child: BottomNavigationBar(
           elevation: 0,
           backgroundColor: Colors.transparent,
+
           type: BottomNavigationBarType.fixed,
+
           currentIndex: currentPage,
           onTap: (index) {
             setState(() {
@@ -75,8 +79,10 @@ class _PageViewRouteState extends State<PageViewRoute> {
               label: 'Profile',
             ),
           ],
+
           selectedItemColor: Colors.yellow,
           unselectedItemColor: Colors.white,
+
         ),
       ),
     );

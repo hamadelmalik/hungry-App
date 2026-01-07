@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hungry/features/home/view/home_view.dart';
+import 'package:hungry/features/product/view/product_details_view.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,9 +14,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'hungerApp',
+      theme: ThemeData(scaffoldBackgroundColor: Colors.white),
 
-      home:  HomeView(),
+      home: ProductDetailsView(),
     );
   }
 }
-
