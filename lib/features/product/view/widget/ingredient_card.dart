@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:hungry/shared/custom_text.dart';
 class IngredientCard extends StatelessWidget {
   final String image,title;
-  const IngredientCard({super.key,required this.image,required this.title});
+  final Color colorIcn,boxDecoration;
+
+  const IngredientCard({super.key,required this.image,required this.title,required this.colorIcn,required this.boxDecoration});
 
   @override
   Widget build(BuildContext context) {
@@ -52,13 +54,13 @@ class IngredientCard extends StatelessWidget {
                   Container(
                     width: 34,
                     height: 34,
-                    decoration: const BoxDecoration(
-                      color: Colors.red,
+                    decoration:  BoxDecoration(
+                      color: boxDecoration,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.add,
-                      color: Colors.white,
+                      color: colorIcn,
                       size: 20,
                     ),
                   ),
