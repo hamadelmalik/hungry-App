@@ -1,12 +1,11 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hungry/core/constants/assets_app.dart';
 import 'package:hungry/core/constants/color_palette.dart';
 import 'package:hungry/features/product/view/widget/ingredient_card.dart';
 import 'package:hungry/features/product/view/widget/spicy_slider.dart';
-import 'package:hungry/shared/custom_brn.dart';
+import 'package:hungry/shared/custom_btn.dart';
 import 'package:hungry/shared/custom_text.dart';
 
 class ProductDetailsView extends StatefulWidget {
