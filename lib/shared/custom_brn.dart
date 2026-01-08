@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hungry/shared/custom_text.dart';
 class CustomBtn extends StatelessWidget {
   final double heightSize,widthSize;
   final Color backgroundColor;
