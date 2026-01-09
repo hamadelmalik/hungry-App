@@ -10,6 +10,8 @@ abstract class AssetsPath {
   static const String Onion = "assets/images/Onion.png";
   static const String frise = "assets/images/frise.png";
   static const String Coleslaw = "assets/images/Coleslaw.png";
+  static const String hamburger = "assets/images/Hamburger.png";
+
 
   static const String hungryTex = "assets/images/hungryTex.svg";
 }
