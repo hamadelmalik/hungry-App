@@ -43,7 +43,11 @@ class _PageViewRouteState extends State<PageViewRoute> {
         padding: EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: ColorPalette.primaryColor,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(25),
+              topRight: Radius.circular(25),
+
+              ),
         ),
         child: BottomNavigationBar(
           elevation: 0,
@@ -72,7 +76,7 @@ class _PageViewRouteState extends State<PageViewRoute> {
 
             BottomNavigationBarItem(
               icon: Icon(Icons.restaurant, color: Colors.white),
-              label: 'Order',
+              label: 'OrderHistory',
             ),
             BottomNavigationBarItem(
               icon: Icon(CupertinoIcons.profile_circled, color: Colors.white),
