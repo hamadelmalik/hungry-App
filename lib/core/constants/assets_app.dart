@@ -5,6 +5,7 @@ abstract class AssetsPath {
   static const String tomato = "assets/images/tomato.png";
   static const String pickles = "assets/images/Pickles.png";
   static const String onn = "assets/images/onn.png";
+  static const String visa = "assets/images/visa.png";
   static const String chease = "assets/images/chease.png";
   static const String salaq = "assets/images/salaq.png";
   static const String Onion = "assets/images/Onion.png";
