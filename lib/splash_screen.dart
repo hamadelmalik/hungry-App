@@ -2,10 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hungry/core/constants/assets_app.dart';
 import 'package:hungry/core/constants/color_palette.dart';
+import 'package:hungry/core/route/route_view.dart';
 
-class SplashScreen extends StatelessWidget {
+class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+
+  @override
+  void initState() {
+    Future.delayed(  Duration (seconds: 2),(){
+      if (!mounted) return;
+
+      Navigator.push(context, MaterialPageRoute(builder:  (context) => PageRouteView(),));
+    }
+    
+    );
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(

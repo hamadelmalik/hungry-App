@@ -2,7 +2,12 @@ import 'package:flutter/animation.dart';
 
 abstract class ColorPalette {
   static const Color primaryColor = Color(0xff08431D);
-  static const secondaryColor = Color(0xffF3F4F6);
-  static const textColor = Color(0xffF7D7D7D);
+  static const Color secondaryColor = Color(0xffF3F4F6);
+  static const Color textColor = Color(0xffF7D7D7);
+  static const Color aje = Color(0xFFEFDDBB);
+  static const Color darkMocha =  Color(0xFF332723);
+  static const Color deepMidnightBlue =  Color(0xFF091C2A);
+
+
 
 }

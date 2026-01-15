@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hungry/core/route/route_view.dart';
+import 'package:hungry/features/auth/view/register_view.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
       title: 'hungerApp',
       theme: ThemeData(scaffoldBackgroundColor: Colors.white),
 
-      home: PageViewRoute(),
+      home: RegisterView(),
     );
   }
 }

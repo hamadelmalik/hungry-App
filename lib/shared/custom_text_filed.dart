@@ -36,9 +36,14 @@ class _CustomTextFiledState extends State<CustomTextFiled> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      cursorColor: Colors.black,
+      cursorColor: Colors.white,
       obscureText: _obscureText,
       controller: widget.controller,
+    cursorErrorColor: Colors.white,
+      style: const TextStyle(
+        color: Colors.white, // 👈 لون النص المكتوب
+        fontSize: 16,
+      ),
 
       validator: (v) {
         if (v == null || v.isEmpty) {
@@ -52,7 +57,7 @@ class _CustomTextFiledState extends State<CustomTextFiled> {
 
         suffixIcon: widget.isPassword
             ? IconButton(
-                onPressed: togglePassword,
+                onPressed: togglePassword,color: Colors.white,
                 icon: Icon(
                   _obscureText ? Icons.visibility_off : Icons.visibility,
                 ),
@@ -67,9 +72,18 @@ class _CustomTextFiledState extends State<CustomTextFiled> {
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(color: Colors.white),
         ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: Colors.red),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: Colors.red),
+        ),
         hintText: widget.hint,
+        hintStyle: TextStyle(color: Colors.white),
         filled: true,
-        fillColor: Colors.white,
+        fillColor: Colors.transparent,
       ),
     );
   }

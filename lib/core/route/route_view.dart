@@ -6,14 +6,14 @@ import 'package:hungry/features/cart/view/cart_view.dart';
 import 'package:hungry/features/home/view/home_view.dart';
 import 'package:hungry/features/orderHistory/view/order_history_view.dart';
 
-class PageViewRoute extends StatefulWidget {
-  const PageViewRoute({super.key});
+class PageRouteView extends StatefulWidget {
+  const PageRouteView({super.key});
 
   @override
-  State<PageViewRoute> createState() => _PageViewRouteState();
+  State<PageRouteView> createState() => _PageViewRouteState();
 }
 
-class _PageViewRouteState extends State<PageViewRoute> {
+class _PageViewRouteState extends State<PageRouteView> {
   late PageController pageController;
 
   int currentPage = 0;
@@ -22,12 +22,7 @@ class _PageViewRouteState extends State<PageViewRoute> {
 
   @override
   void initState() {
-    pageList = [
-      HomeView(),
-      CartView(),
-      OrderHistoryView(),
-      ProfileView(),
-    ];
+    pageList = [HomeView(), CartView(), OrderHistoryView(), ProfileView()];
     pageController = PageController(initialPage: currentPage);
     super.initState();
   }
@@ -35,58 +30,49 @@ class _PageViewRouteState extends State<PageViewRoute> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       body: PageView(
-          physics: NeverScrollableScrollPhysics(),
-          controller: pageController, children: pageList),
+        physics: NeverScrollableScrollPhysics(),
+        controller: pageController,
+        children: pageList,
+      ),
 
-      bottomNavigationBar: Container(
-        padding: EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: ColorPalette.primaryColor,
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(25),
-              topRight: Radius.circular(25),
+      bottomNavigationBar: ClipRRect(
 
-              ),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
         ),
         child: BottomNavigationBar(
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-
+          backgroundColor: ColorPalette.primaryColor,
           type: BottomNavigationBarType.fixed,
-
           currentIndex: currentPage,
+          selectedItemColor: Colors.yellow,
+          unselectedItemColor: Colors.white,
           onTap: (index) {
             setState(() {
               currentPage = index;
             });
-            pageController.jumpToPage(currentPage);
+            pageController.jumpToPage(index);
           },
-
-          items: [
+          items: const [
             BottomNavigationBarItem(
-              icon: Icon(CupertinoIcons.home, color: Colors.white),
+              icon: Icon(CupertinoIcons.home),
               label: 'Home',
             ),
-
             BottomNavigationBarItem(
-              icon: Icon(CupertinoIcons.cart, color: Colors.white),
+              icon: Icon(CupertinoIcons.cart),
               label: 'Cart',
             ),
-
             BottomNavigationBarItem(
-              icon: Icon(Icons.restaurant, color: Colors.white),
+              icon: Icon(Icons.restaurant),
               label: 'OrderHistory',
             ),
             BottomNavigationBarItem(
-              icon: Icon(CupertinoIcons.profile_circled, color: Colors.white),
+              icon: Icon(CupertinoIcons.profile_circled),
               label: 'Profile',
             ),
           ],
-
-          selectedItemColor: Colors.yellow,
-          unselectedItemColor: Colors.white,
-
         ),
       ),
     );

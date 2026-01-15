@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hungry/core/constants/assets_app.dart';
@@ -6,20 +7,33 @@ import 'package:hungry/features/checkout/view/widget/order_details_widget.dart';
 import 'package:hungry/shared/custom_btn.dart';
 import 'package:hungry/shared/custom_text.dart';
 
-class CheckoutView extends StatelessWidget {
+class CheckoutView extends StatefulWidget {
   const CheckoutView({super.key});
 
   @override
+  State<CheckoutView> createState() => _CheckoutViewState();
+}
+
+class _CheckoutViewState extends State<CheckoutView> {
+  String? selectedMethod = 'cash';
+
+  @override
   Widget build(BuildContext context) {
-    return   Scaffold(
+    return Scaffold(
+      backgroundColor: Colors.white,
 
       appBar: AppBar(
-        toolbarHeight: 60, // أقل من 0 مش ممكن
+        toolbarHeight: 60,
+        // أقل من 0 مش ممكن
         scrolledUnderElevation: 0,
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: ColorPalette.primaryColor, size: 22),
+          icon: Icon(
+            Icons.arrow_back,
+            color: ColorPalette.primaryColor,
+            size: 22,
+          ),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -32,106 +46,234 @@ class CheckoutView extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CustomText(text: 'Order Summary',fontWeight: FontWeight.bold,fontSize: 25,),
-                OrderDetailsWidget(order: '20', taxes: '0.3', fees: '0.2', total: '18',),
+                CustomText(
+                  text: 'Order Summary',
+                  fontWeight: FontWeight.bold,
+                  fontSize: 25,
+                ),
+                OrderDetailsWidget(
+                  order: '20',
+                  taxes: '0.3',
+                  fees: '0.2',
+                  total: '18',
+                ),
 
                 Gap(20),
-                CustomText(text: 'Payment Method',fontWeight: FontWeight.bold,fontSize: 25,),
+                CustomText(
+                  text: 'Payment Method',
+                  fontWeight: FontWeight.bold,
+                  fontSize: 25,
+                ),
+                Gap(20),
+                //---------cash-------------//
+                ListTile(
+                  onTap: () {
+                    setState(() {
+                      selectedMethod = 'cash';
+                    });
+                  },
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical: 8,
+                    horizontal: 16,
+                  ),
 
-
-
-                //-------delivery  time------
-
-
-
-                InkWell(
-                  borderRadius: BorderRadius.circular(40),
-                  onTap: () {},
-                  child: Container(
-                    height: 70,
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF3B2F2F), // لون غامق قريب من الصورة
-                      borderRadius: BorderRadius.circular(40),
-            
-                    ),
-                    child: Row(
-                      children: [
-                        const Expanded(
-                          child: Center(
-                            child: Text(
-                              'Cash on Delivery',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ),
-                        Container(
-                          width: 26,
-                          height: 26,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white, width: 2),
-                          ),
-                          child: Center(
-                            child: Container(
-                              width: 12,
-                              height: 12,
-                              decoration: const BoxDecoration(
-                                color: Colors.white,
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                  tileColor: Color(0xff3C2F2F),
+                  leading: Image.asset(AssetsPath.dollar, width: 50),
+                  title: const CustomText(
+                    text: 'Cash on Delivery',
+                    color: Colors.white,
+                    fontSize: 18,
+                  ),
+                  trailing: Radio<String>(
+                    value: 'cash',
+                    groupValue: selectedMethod,
+                    activeColor: Colors.white, // لون عند الاختيار
+                    onChanged: (v) {
+                      setState(() {
+                        selectedMethod = v!;
+                      });
+                    },
                   ),
                 ),
-                Container(
-                  height: 100,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(40),
-                    image: const DecorationImage(
-                      image: AssetImage(AssetsPath.visa), // مسار الصورة
-                      fit: BoxFit.cover, // تغطي الكونتينر بالكامل
-                    ),
-            
+                Gap(12),
+                //-------------dept-----------------------//
+                ListTile(
+                  onTap: () {
+                    setState(() {
+                      selectedMethod = 'dept';
+                    });
+                  },
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical: 8,
+                    horizontal: 16,
+                  ),
+
+                  tileColor: Colors.blue.shade900,
+                  leading: Image.asset(AssetsPath.Asset, width: 50),
+                  title: const CustomText(
+                    text: 'Debit card',
+                    color: Colors.white,
+                    fontSize: 18,
+                  ),
+                  subtitle: const CustomText(
+                    text: '******2345',
+                    color: Colors.white,
+                    fontSize: 18,
+                  ),
+                  trailing: Radio<String>(
+                    value: 'dept',
+                    groupValue: selectedMethod,
+                    activeColor: Colors.white, // لون عند الاختيار
+                    onChanged: (v) {
+                      setState(() {
+                        selectedMethod = v!;
+                      });
+                    },
                   ),
                 ),
-               Gap(10),
+
+                Gap(10),
                 Row(
-                 // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                  Icon(Icons.check_box,color: Colors.red,),
-                  Gap(10),
-                  CustomText(text: 'Save card details for future payments'),
-                    
-                ],
+                    Icon(Icons.check_box, color: Colors.red),
+                    Gap(10),
+                    CustomText(text: 'Save card details for future payments'),
+                  ],
                 ),
-                    CustomText(text: 'Total price'),
-            
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                  CustomText(text: '18.19\$',color: Colors.black,fontWeight: FontWeight.bold,fontSize: 30,),
-                  CustomBtn(heightSize: 70, widthSize: 120, backgroundColor: ColorPalette.primaryColor, child: CustomText(text: 'Pay Now',color: Colors.white,fontSize: 22,fontWeight: FontWeight.bold,)),
-                    
-                ],)
-                    
-                    
-                    
               ],
             ),
           ),
         ),
       ),
+      bottomSheet: Container(
+        height: 120,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withAlpha(12),
+              blurRadius: 20,
+              spreadRadius: 2,
+              offset: Offset(0, -4), // ظل لفوق (مناسب للـ bottomSheet)
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CustomText(
+                    text: 'Total',
+                    fontSize: 20,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  CustomText(
+                    text: '33\$',
+                    fontSize: 20,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ],
+              ),
+              CustomBtn(
+                heightSize: 70,
+                widthSize: 150,
+                backgroundColor: ColorPalette.primaryColor,
+                child: CustomText(
+                  text: 'Add To Cart',
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+                onTap: () {
+                  showAdaptiveDialog(
+                    context: context,
+                    builder: (context) {
+                      return Dialog(
+                        backgroundColor: Colors.transparent,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20.0,
+                            vertical: 100,
+                          ),
+                          child: Container(
+                            padding: EdgeInsets.all(20),
+
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                CircleAvatar(
+                                  radius: 40,
+                                  backgroundColor: ColorPalette.primaryColor,
+                                  child: Icon(
+                                    Icons.check,
+                                    size: 50,
+                                    weight: 700, // مدعوم
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                Gap(10),
+                                CustomText(
+                                  text: 'Success !',
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 30,
+                                  color: ColorPalette.primaryColor,
+                                ),
+                                Gap(10),
+                                CustomText(
+                                  text:
+                                      'Your payment was successful.\n A receipt for this purchase\n has been sent to your email. !',
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                  color: Color(0xFFBCBBBB),
+                                ),
+                                Gap(100),
+                                CustomBtn(
+                                  heightSize: 50,
+                                  widthSize: 220,
+                                  backgroundColor: ColorPalette.primaryColor
+                                      .withValues(alpha: 0.20),
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: CustomText(
+                                    text: 'Close',
+                                    color: ColorPalette.primaryColor,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
-
 }
-
-
