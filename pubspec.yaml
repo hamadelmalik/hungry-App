@@ -39,6 +39,8 @@ dependencies:
   dio: ^5.9.0
   shepherd: ^0.7.4
   shared_preferences: ^2.5.4
+  skeletonizer: ^2.1.2
+  image_picker: ^1.0.7
 
 dev_dependencies:
   flutter_test:

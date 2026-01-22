@@ -127,8 +127,10 @@ class _RegisterViewState extends State<RegisterView> {
                        Gap(40),
                        //-----sing Up----------//
                        isLoading? CupertinoActivityIndicator(color: Colors.white,):CustomAuthBottom(
+                         height: 60,
+                         width: double.infinity,
                          onTap: signup,
-                         text: 'SignUp',
+                         text: 'SignUp',fontSize: 20,
                        ),
                        Gap(20),
                        Row(children: [

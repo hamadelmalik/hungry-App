@@ -3,12 +3,14 @@ import 'package:hungry/core/constants/color_palette.dart';
 class CustomProfileTextFiled extends StatelessWidget {
   final TextEditingController controller;
   final String label;
-  const CustomProfileTextFiled({super.key, required this.controller, required this.label});
+  final TextInputType? textInputType;
+  const CustomProfileTextFiled({super.key, required this.controller, required this.label, this.textInputType});
 
   @override
   Widget build(BuildContext context) {
     return   TextField(
       controller:controller,
+      keyboardType: textInputType,
       cursorColor: ColorPalette.primaryColor,
       decoration: InputDecoration(
         labelText: label,

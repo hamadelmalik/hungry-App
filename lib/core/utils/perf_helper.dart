@@ -1,6 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-class PerfHelper {
+class PrefHelper {
   static const String _tokenKey = 'auth token';
 
   static Future<void> saveToken(String token) async {

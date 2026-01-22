@@ -1,6 +1,10 @@
-
 import 'dart:developer';
-
+import 'dart:io';
+import 'package:flutter/cupertino.dart';
+import 'package:hungry/features/auth/view/login_view.dart';
+import 'package:hungry/features/auth/view/widget/custom_bottom.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
@@ -24,8 +28,14 @@ class _ProfileViewState extends State<ProfileView> {
   final TextEditingController _name = TextEditingController();
   final TextEditingController _email = TextEditingController();
   final TextEditingController _address = TextEditingController();
+  final TextEditingController _visa = TextEditingController();
+  bool isLoading = false;
+  bool isLogoutLoading = false;
   UserModel? userModel;
+  String? selectImage;
   final AuthRepo authRepo = AuthRepo();
+
+  //--------getProfileData--------------//
   Future<void> getProfileData() async {
     try {
       final user = await authRepo.getProfileData();
@@ -41,120 +51,275 @@ class _ProfileViewState extends State<ProfileView> {
       ScaffoldMessenger.of(context).showSnackBar(customSnack(errorMsg));
     }
   }
+
+  //--------pickImage--------------//
+  Future<void> pickImage() async {
+    final imagePicker = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+    );
+    setState(() {
+      if (imagePicker != null) {
+        selectImage = imagePicker.path;
+      }
+    });
+  }
+
+  //--------updateProfile--------------//
+
+  Future<void> updateProfileData() async {
+    try {
+      log('updateProfileData in process');
+      setState(()=> isLoading=true);
+      final user = await authRepo.updateProfileData(
+        name: _name.text.trim(),
+        email: _email.text.trim(),
+        address: _address.text.trim(),
+        visa: _visa.text.trim(),
+        imagePath: selectImage,
+      );
+      setState(()=> isLoading=false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        customSnack(
+          'Update Profile Successfully',
+          color: Colors.green,
+          iconData: CupertinoIcons.check_mark_circled_solid,// اللون أخضر للنجاح
+        )
+
+
+      );
+
+      setState(()=> userModel=user);
+      await getProfileData();
+    } catch (e) {
+      setState(()=> isLoading=false);
+      String errorMsg = 'update profile';
+
+      if (e is ApiError) {
+        throw errorMsg = e.message.toString();
+      }
+      ScaffoldMessenger.of(context).showSnackBar(customSnack(errorMsg));
+    }
+  }
+//--------logout--------------//
+  Future<void>logout()async{
+    setState(()=> isLogoutLoading=true);
+    await authRepo.logout();
+    setState(()=> isLogoutLoading=false);
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginView()),
+    );
+  }
+
+  void clearImage() {
+    setState(() {
+      selectImage = null;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
 
     // تحميل بيانات المستخدم
-    getProfileData().then((v) {
-      // طباعة للتأكد إن البيانات اتجمعت
-      log('🔐 User data loaded successfully');
-      log('Name: ${userModel?.name}');
-      log('Email: ${userModel?.email}');
-      log('Address: ${userModel?.address}');
+    getProfileData()
+        .then((v) {
+          // طباعة للتأكد إن البيانات اتجمعت
+          log('🔐 User data loaded successfully');
+          log('Name: ${userModel?.name}');
+          log('Email: ${userModel?.email}');
+          log('Address: ${userModel?.address}');
+          log('VISA FROM API => ${userModel?.visa}');
 
-      // تحديث TextEditingControllers
-      _name.text = userModel?.name.toString() ?? 'hamad';
-      _email.text = userModel?.email.toString() ?? 'Hamad4alll@gmail.com';
-      _address.text = userModel?.address.toString() ?? 'Sudan';
+          // تحديث TextEditingControllers
+          _name.text = userModel?.name.toString() ?? 'hamad';
+          _email.text = userModel?.email.toString() ?? 'Hamad4alll@gmail.com';
+          _address.text =
+              (userModel?.address == null ||
+                  userModel?.address?.toLowerCase() == 'null')
+              ? 'Sudan'
+              : userModel!.address!;
+          _visa.text = userModel?.visa.toString() ?? '';
 
-      // تحديث الواجهة بعد تغيير البيانات
-      setState(() {});
-    }).catchError((e) {
-      // التعامل مع أي خطأ في تحميل البيانات
-      log('⚠️ Error loading user data: $e');
-    });
+          // تحديث الواجهة بعد تغيير البيانات
+
+          setState(() {});
+        })
+        .catchError((e) {
+          // التعامل مع أي خطأ في تحميل البيانات
+          log('⚠️ Error loading user data: $e');
+        });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     // backgroundColor:  ColorPalette.aje,
+      // backgroundColor:  ColorPalette.aje,
       appBar: AppBar(
-    //    backgroundColor:  ColorPalette.aje,
-        leading: GestureDetector(
-          onTap: () {
-            Navigator.pop(context);
-          },
-          child: Icon(Icons.arrow_back, color: ColorPalette.primaryColor),
-        ),
-        actions: [
-          SvgPicture.asset(
-            AssetsPath.settings,
-            colorFilter: ColorFilter.mode(
-              ColorPalette.primaryColor,
-              BlendMode.srcIn,
-            ),
-          ),
-        ],
+        toolbarHeight: 0.0,
+        scrolledUnderElevation: 0.0,
+
+        backgroundColor: Colors.white,
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15.0),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Center(
-                child: Container(
-                  width: 100,
-                  height: 100,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.grey[300],
-                    image: DecorationImage(
-                      image: NetworkImage(
-                        userModel?.image ?? 'https://tse4.mm.bing.net/th/id/OIP.hGSCbXlcOjL_9mmzerqAbQHaHa?pid=Api&P=0&h=220',
+        child: RefreshIndicator(
+          color: ColorPalette.primaryColor,
+          onRefresh: () async {
+            await getProfileData();
+          },
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Skeletonizer(
+              enabled: userModel == null,
+              child: Column(
+                children: [
+                  Row(
+
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+
+                      GestureDetector(
+                        onTap: () => Navigator.popUntil(
+                          context,
+                          (route) => route.isFirst,
+                        ),
+                        child: Icon(
+                          Icons.arrow_back,
+                          color: ColorPalette.primaryColor,
+                        ),
                       ),
-                      fit: BoxFit.cover,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 0,
+                        ),
+                        child: Icon(CupertinoIcons.settings_solid),
+                      ),
+                    ],
+                  ),
+                  Center(
+                    child: Container(
+                      height: 100,
+                      width: 100,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          width: 1,
+                          color: ColorPalette.primaryColor,
+                        ),
+                        color: Colors.grey.shade100,
+                      ),
+                      clipBehavior: Clip.antiAlias,
+                      child: selectImage != null
+                          ? Image.file(File(selectImage!), fit: BoxFit.cover)
+                          : (userModel?.image != null &&
+                                userModel!.image!.isNotEmpty)
+                          ? Image.network(
+                              userModel!.image!,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, err, builder) =>
+                                  Icon(Icons.person),
+                            )
+                          : Icon(Icons.person),
                     ),
                   ),
-                ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      //------uploadImage------
+                      CustomAuthBottom(
+                        height: 30,
+                        width: 100,
+                        onTap: pickImage,
+                        text: 'Upload Image',
+                        fontSize: 12,
+                        textColor: Colors.white,
+                        background: ColorPalette.primaryColor,
+                      ),
+                      //------clearImage------
+                      CustomAuthBottom(
 
-              ),
-              Gap(15),
-              CustomProfileTextFiled(controller: _name, label: 'Name'),
-              Gap(15),
-              CustomProfileTextFiled(controller: _email, label: 'Email'),
-              Gap(15),
-              CustomProfileTextFiled(controller: _address, label: 'Address'),
-              Gap(10),
-              Divider(color: ColorPalette.primaryColor),
-              Gap(10),
-              ListTile(
-                onTap: () {},
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                contentPadding: EdgeInsets.symmetric(
-                  vertical: 8,
-                  horizontal: 16,
-                ),
+                        height: 30,
+                        width: 100,
+                        onTap: clearImage,
+                        text: 'clear',
+                        fontSize: 12,
+                        textColor: Colors.white,
+                        background: Colors.red,
+                      ),
+                    ],
+                  ),
 
-                tileColor: Colors.blue.shade900,
-                leading: Image.asset(AssetsPath.Asset, width: 50),
-                title: const CustomText(
-                  text: 'Debit card',
-                  color: Colors.white,
-                  fontSize: 18,
-                ),
-                subtitle: const CustomText(
-                  text: '******2345',
-                  color: Colors.white,
-                  fontSize: 18,
-                ),
-                trailing: CustomText(
-                  text: 'Default',
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
+
+
+                  Gap(15),
+                  CustomProfileTextFiled(controller: _name, label: 'Name'),
+                  Gap(15),
+                  CustomProfileTextFiled(controller: _email, label: 'Email'),
+                  Gap(15),
+                  CustomProfileTextFiled(
+                    controller: _address,
+                    label: 'Address',
+                  ),
+                  Gap(10),
+                  Divider(color: ColorPalette.primaryColor),
+                  Gap(10),
+                  //---visa--------------
+                  userModel?.visa !=null
+                      ? CustomProfileTextFiled(
+                          controller: _visa,
+                          label: 'visa',
+                          textInputType: TextInputType.number,
+                        )
+                      : ListTile(
+                          onTap: () {},
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          contentPadding: EdgeInsets.symmetric(
+                            vertical: 8,
+                            horizontal: 16,
+                          ),
+
+                          tileColor: Colors.blue.shade900,
+                          leading: Image.asset(AssetsPath.Asset, width: 50),
+                          title: const CustomText(
+                            text: 'Debit card',
+                            color: Colors.white,
+                            fontSize: 18,
+                          ),
+                          subtitle: CustomText(
+                            text: (() {
+                              final visa = userModel?.visa?.toString();
+
+                              if (visa != null &&
+                                  visa.trim().isNotEmpty &&
+                                  visa.toLowerCase() != 'null') {
+                                return visa; // عرض الرقم كامل
+                              }
+
+                              return '*****1235';
+                            })(),
+                            color: Colors.white,
+                            fontSize: 18,
+                          ),
+
+                          trailing: CustomText(
+                            text: 'Default',
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                  Gap(20),
+                ],
               ),
-              Gap(20),
-            ],
+            ),
           ),
         ),
       ),
 
       bottomSheet: Container(
-
         height: 100,
 
         padding: EdgeInsets.all(12),
@@ -164,60 +329,77 @@ class _ProfileViewState extends State<ProfileView> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Container(
-                padding: EdgeInsets.all(10),
-                height: 60,
-                width: 180,
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: ColorPalette.primaryColor,
-                    width: 2,
-                  ),
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                ),
+              InkWell(
 
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    CustomText(
-                      text: 'Edit Profile',
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                      onTap:  isLoading ? null : updateProfileData,
+                      child: Container(
 
-                    SvgPicture.asset(
-                      AssetsPath.edit,
-                      colorFilter: ColorFilter.mode(
-                        ColorPalette.primaryColor,
-                        BlendMode.srcIn,
+                        padding: EdgeInsets.all(10),
+                        height: 60,
+                        width: 180,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: ColorPalette.primaryColor,
+                            width: 2,
+                          ),
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+
+                        child: Center(
+                          child: isLoading
+                              ? CupertinoActivityIndicator()
+                              :   Row(
+
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              CustomText(
+                                text: 'Edit Profile',
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+
+                             Icon(Icons.edit_document,color: ColorPalette.primaryColor,)
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                  ],
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.all(10),
-                height: 60,
-                width: 180,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.white, width: 2),
-                  color: ColorPalette.primaryColor,
-                  borderRadius: BorderRadius.circular(12),
-                ),
+              //----------logout-----
+              InkWell(
 
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    CustomText(
-                      text: 'Log Out',
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                onTap:  logout,
+                child: Container(
+                  padding: EdgeInsets.all( 15),
+                  height: 60,
+                  width: 180,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: ColorPalette.primaryColor,
+                      width: 2,
                     ),
+                    color: ColorPalette.primaryColor,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
 
-                    Icon(Icons.logout, color: Colors.white),
-                  ],
+                  child: Center(
+                    child: isLogoutLoading
+                        ? CupertinoActivityIndicator(color: Colors.white,)
+                        :   Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,                      children: [
+                        CustomText(
+                          text: 'Logout',
+                          fontSize: 18,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+
+                     Icon(Icons.logout,color: Colors.white,)
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ],

@@ -111,8 +111,11 @@ class _LoginViewState extends State<LoginView> {
                       //----------login------//
                       isLoading?CupertinoActivityIndicator(color: Colors.white,):
                       CustomAuthBottom(
+
+                        height: 60,
+                        width: double.infinity,
                         onTap: login,
-                        text: 'Login',
+                        text: 'Login',fontSize: 20,
                       ),
                       Gap(20),
                       Row(children: [
