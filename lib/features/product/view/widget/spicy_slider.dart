@@ -18,28 +18,30 @@ class SpicySlider extends StatelessWidget {
           AssetsPath.product1,
           width: 180,
         ),
-        Column(children: [
-          CustomText(
-            text:'Customize Your Burger\n to Your Tastes. \nUltimate Experience',
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-          CustomText(text: 'Spicy'),
-          Slider(
-            min: 0,
-              max: 1,
-              value: value,
-              onChanged: onChanged),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            //  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              CustomText(text: '🥶'),
-              Gap(90),
-              CustomText(text: '🌶️')
+        Expanded(
+          child: Column(children: [
+            CustomText(
+              text:'Customize Your Burger\n to Your Tastes. \nUltimate Experience',
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+            CustomText(text: 'Spicy'),
+            Slider(
+              min: 0,
+                max: 1,
+                value: value,
+                onChanged: onChanged),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                CustomText(text: '🥶'),
+                Gap(90),
+                CustomText(text: '🌶️')
 
-            ],)
-        ],)
+              ],)
+          ],),
+        )
 
 
 

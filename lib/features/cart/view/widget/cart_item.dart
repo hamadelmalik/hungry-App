@@ -50,10 +50,9 @@ class CustomCartItem extends StatelessWidget {
                         child: Icon(CupertinoIcons.add, color: Colors.white),
                       ),
                     ),
-                    Gap(20),
-
+                    Gap(10),
                     CustomText(text: number.toString(),fontWeight: FontWeight.bold,fontSize: 25,),
-                    Gap(20),
+                    Gap(10),
 
                     GestureDetector(
                       onTap: onMinus,

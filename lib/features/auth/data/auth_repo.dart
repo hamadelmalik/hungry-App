@@ -192,7 +192,7 @@ class AuthRepo {
 
   Future<UserModel?> autoLogin() async {
     final token = await PrefHelper.getToken();
-    if (token == null && token == 'guest') {
+    if (token == null || token == 'guest') {
       isGuest = true;
       _currentUser = null;
       return null;

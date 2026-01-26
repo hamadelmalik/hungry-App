@@ -118,17 +118,28 @@ class _LoginViewState extends State<LoginView> {
                         text: 'Login',fontSize: 20,
                       ),
                       Gap(20),
-                      Row(children: [
-                        CustomText(text: 'Don have Account',color: Colors.white,fontSize: 20,),
-                        GestureDetector(
+                      Row(
+                        children: [
+                          Expanded(
+                            child: CustomText(
+                              text: 'Don have Account',
+                              color: Colors.white,
+                              fontSize: 16,
+                            ),
+                          ),
+                          GestureDetector(
                             onTap: login,
-                            child: CustomText(text: ' Create Account',color: Colors.orangeAccent,
-                                fontSize: 20,fontWeight: FontWeight.bold,)),
-                        Gap(10),
+                            child: CustomText(
+                              text: ' Create Account',
+                              color: Colors.orangeAccent,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
 
-
-                      ],),
-               Gap(20),
+                      Gap(20),
                CustomBtn(
                    onTap: (){
                      Navigator.push(context, MaterialPageRoute(builder:  (context) {

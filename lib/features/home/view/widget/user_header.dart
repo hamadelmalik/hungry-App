@@ -23,7 +23,11 @@ class UserHeader extends StatelessWidget {
         const Spacer(),
         const CircleAvatar(
           backgroundColor: ColorPalette.primaryColor,
-            child: Icon(Icons.person ,weight: 88,color: Colors.white,),
+            child: Icon(
+              Icons.person,
+              size: 30, // أو أي حجم مناسب
+              color: Colors.white,
+            ),
             radius: 30),
       ],
     );
