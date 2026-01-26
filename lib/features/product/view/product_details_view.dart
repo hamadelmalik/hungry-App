@@ -1,8 +1,10 @@
 import 'dart:developer';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:hungry/core/constants/assets_app.dart';
 import 'package:hungry/core/constants/color_palette.dart';
+import 'package:hungry/features/home/data/model/topping_model.dart';
+import 'package:hungry/features/home/data/repo/prodect_repo.dart';
 import 'package:hungry/features/product/view/widget/ingredient_card.dart';
 import 'package:hungry/features/product/view/widget/spicy_slider.dart';
 import 'package:hungry/shared/custom_btn.dart';
@@ -17,19 +19,38 @@ class ProductDetailsView extends StatefulWidget {
 
 class _ProductDetailsViewState extends State<ProductDetailsView> {
   double spicyValue = 0.5;
-  final ingredients = [
-    {'image': AssetsPath.tomato, 'title': 'Tomato'},
-    {'image': AssetsPath.chease, 'title': 'Cheese'},
-    {'image': AssetsPath.onn, 'title': 'Bacons'},
-    {'image': AssetsPath.pickles, 'title': 'pickles'},
-  ];
-  final sideOptions = [
-    {'image': AssetsPath.frise, 'title': 'Frise'},
-    {'image': AssetsPath.Coleslaw, 'title': 'Coleslaw'},
-    {'image': AssetsPath.salaq, 'title': 'Salad'},
-    {'image': AssetsPath.Onion, 'title': 'Onion'},
-  ];
 
+
+
+  ProductRepo productRepo=ProductRepo();
+  List<ToppingModel>? toppings;
+  List<ToppingModel>? options;
+  Future<void>getToppings()async{
+    final res=await productRepo.getTopping();
+    setState(() =>toppings=res);
+
+  }
+
+  //-----sideoptions-----
+
+
+
+  Future<void>getOption()async{
+    final res=await productRepo.getOption();
+   setState(() {
+     options=res;
+   });
+
+  }
+
+
+  @override
+
+  void initState() {
+    getToppings();
+    getOption();
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
 
@@ -66,24 +87,37 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
                   fontWeight: FontWeight.bold,
                 ),
                 Gap(20),
+                //------------topping----------
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: List.generate(
-                      ingredients.length,
-                      (index) => Padding(
-                        padding: const EdgeInsets.only(right: 12),
-                        // مسافة بين كل كارت واللي بعده
-                        child: IngredientCard(
-                          image: ingredients[index]['image']!,
-                          title: ingredients[index]['title']!,
-                          colorIcn: Colors.white,
-                          boxDecoration: Colors.red,
-                        ),
-                      ),
+                      toppings?.length ?? 4,
+                          (index) {
+                    //    final isSelected = selectedToppingIndex == index;
+                        final topping = toppings?[index];
+
+                        if (topping == null) {
+                          return const Padding(
+                            padding: EdgeInsets.only(right: 12),
+                            child: CupertinoActivityIndicator(),
+                          );
+                        }
+
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 12),
+                          child: ToppingsCard(
+                            image: topping.image,
+                            title: topping.name,
+                            colorIcn: Colors.white, boxDecoration: Colors.red,
+                           // colorIcn: isSelected ? Colors.red : Colors.white,
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ),
+
                 Gap(20),
                 CustomText(
                   text: 'Side options',
@@ -96,17 +130,28 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: List.generate(
-                      sideOptions.length,
-                      (index) => Padding(
-                        padding: const EdgeInsets.only(right: 12),
-                        // مسافة بين كل كارت واللي بعده
-                        child: IngredientCard(
-                          image: sideOptions[index]['image']!,
-                          title: sideOptions[index]['title']!,
-                          colorIcn: Colors.white,
-                          boxDecoration: Colors.black,
-                        ),
-                      ),
+                      options?.length ?? 4,
+                          (index) {
+                        //    final isSelected = selectedToppingIndex == index;
+                        final option = options?[index];
+
+                        if (option == null) {
+                          return const Padding(
+                            padding: EdgeInsets.only(right: 12),
+                            child: CupertinoActivityIndicator(),
+                          );
+                        }
+
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 12),
+                          child: ToppingsCard(
+                            image: option.image,
+                            title: option.name,
+                            colorIcn: Colors.white, boxDecoration: Colors.grey,
+                            // colorIcn: isSelected ? Colors.red : Colors.white,
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ),

@@ -99,7 +99,7 @@ class _HomeViewState extends State<HomeView> {
                         return CupertinoActivityIndicator();
                       }
                       return GestureDetector(
-                        onTap: () => Navigator.push(
+                        onTap: () => Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
                             builder: (c) => ProductDetailsView(
