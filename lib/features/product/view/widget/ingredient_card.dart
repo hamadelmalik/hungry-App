@@ -5,13 +5,15 @@ import 'package:hungry/shared/custom_text.dart';
 class ToppingsCard extends StatelessWidget {
   final String image, title;
   final Color colorIcn, boxDecoration;
+  final VoidCallback onAdd;
 
   const ToppingsCard({
     super.key,
     required this.image,
     required this.title,
     required this.colorIcn,
-    required this.boxDecoration,
+    required this.boxDecoration, required this.onAdd,
+
   });
 
   @override

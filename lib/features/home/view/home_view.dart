@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -62,13 +61,18 @@ class _HomeViewState extends State<HomeView> {
                   borderRadius: BorderRadius.circular(30),
 
                   //  color: Colors.white.withAlpha(450).withOpacity(0.1),
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 30, right: 20, left: 20),
-                      child: Column(children: [UserHeader(), Gap(20),SearchWidget()]),
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      top: 30,
+                      right: 20,
+                      left: 20,
+                    ),
+                    child: Column(
+                      children: [UserHeader(), Gap(20), SearchWidget()],
                     ),
                   ),
                 ),
-
+              ),
 
               /// Category
               SliverToBoxAdapter(
@@ -99,10 +103,11 @@ class _HomeViewState extends State<HomeView> {
                         return CupertinoActivityIndicator();
                       }
                       return GestureDetector(
-                        onTap: () => Navigator.pushReplacement(
+                        onTap: () => Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (c) => ProductDetailsView(
+                            builder: (c) => ProductDetailsView(productId: product.id,
+                              productImage: product.image,
                               //productImage: product.image,
                             ),
                           ),
