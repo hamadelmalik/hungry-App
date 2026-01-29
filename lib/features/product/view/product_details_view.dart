@@ -1,8 +1,12 @@
+
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hungry/core/constants/color_palette.dart';
-import 'package:hungry/features/cart/data/model/model.dart';
+import 'package:hungry/core/network/api_error.dart';
+import 'package:hungry/features/cart/data/model/cart_model.dart';
 import 'package:hungry/features/cart/data/repo/cart_repo.dart';
 import 'package:hungry/features/home/data/model/topping_model.dart';
 import 'package:hungry/features/home/data/repo/prodect_repo.dart';
@@ -27,17 +31,24 @@ class ProductDetailsView extends StatefulWidget {
 
 class _ProductDetailsViewState extends State<ProductDetailsView> {
   double spicyValue = 0.5;
+  bool isLoading=false;
 
-  List<int> selectedToppingIndex = [];
-  List<int> selectedOptionIndex = [];
+  List<int> selectedTopping = [];
+  List<int> selectedOptions = [];
 
   ProductRepo productRepo = ProductRepo();
   List<ToppingModel>? toppings;
   List<ToppingModel>? options;
 
   Future<void> getToppings() async {
+  try{
     final res = await productRepo.getTopping();
     setState(() => toppings = res);
+//    selectedTopping = [];
+  }catch (e){
+    throw ApiError(message: e.toString());
+  }
+
   }
 
   //-----options-----
@@ -46,6 +57,7 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
     final res = await productRepo.getOption();
     setState(() {
       options = res;
+     // selectedOptions = [];
     });
   }
 
@@ -102,8 +114,9 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: List.generate(toppings?.length ?? 4, (index) {
-                      //    final isSelected = selectedToppingIndex == index;
+                        // final isSelected = selectedOptions == index;
                       final topping = toppings?[index];
+                      final id = topping?.id ?? 1;
 
                       if (topping == null) {
                         return const Padding(
@@ -121,12 +134,11 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
                           colorIcn: Colors.white,
                           boxDecoration: Colors.red,
                           onAdd: () {
-                            final id =topping.id;
                             setState(() {
-                              if(selectedToppingIndex.contains(id)){
-                                selectedToppingIndex.removeAt(id);
-                              }else{
-                                selectedToppingIndex.add(id);
+                              if (selectedTopping.contains(id)) {
+                                selectedTopping.remove(id);
+                              } else {
+                                selectedTopping.add(id);
                               }
                             });
                           },
@@ -152,6 +164,7 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
                     children: List.generate(options?.length ?? 4, (index) {
                       //    final isSelected = selectedToppingIndex == index;
                       final option = options?[index];
+                      final id = option?.id ?? 1;
 
                       if (option == null) {
                         return const Padding(
@@ -168,12 +181,11 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
                           colorIcn: Colors.white,
                           boxDecoration: Colors.grey,
                           onAdd: () {
-                            final id = option.id;
                             setState(() {
-                              if (selectedOptionIndex.contains(id)) {
-                                selectedOptionIndex.removeAt(id);
+                              if (selectedOptions.contains(id)) {
+                                selectedOptions.remove(id);
                               } else {
-                                selectedOptionIndex.add(id);
+                                selectedOptions.add(id);
                               }
                             });
                           },
@@ -231,21 +243,37 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
                   ],
                 ),
                 CustomButton(
-                  widget: Icon(CupertinoIcons.cart_badge_plus),
+                  widget: isLoading ? CupertinoActivityIndicator(color: Colors.white,):Icon(CupertinoIcons.cart_badge_plus),
                   gap: 10,
                   height: 48,
                   color: Colors.white,
                   textColor: ColorPalette.primaryColor,
                   text: 'Add To Cart',
-                  onTap: () {
-                    final cartItems = CartModel(
-                      productId: widget.productId,
-                      qyt: 1,
-                      spicy: spicyValue,
-                      toppings: selectedToppingIndex,
-                      options: selectedOptionIndex,
+
+                  onTap: () async {
+                    final cartItems1 = CartModel(
+                      productId: 1,
+                      quantity: 2,
+                      spicy: 0.1,
+                      toppings: [1,2,3],
+                      options: [1,2,3],
                     );
-                  },
+
+                    final cartItems2 = CartModel(
+                      productId: 3,
+                      quantity: 1,
+                      spicy: 0.0, // لو مفيش spicy
+                      toppings: [],
+                      options: [],
+                    );
+                    final cartRequest = CartRequestModel(items: [cartItems1, cartItems2]);
+                    log('Cart JSON: ${cartRequest.toJson()}');
+                    await cartRepo.addToCart(
+                      CartRequestModel(items: [cartItems1, cartItems2]),
+                    );
+
+
+                  }
                 ),
               ],
             ),
