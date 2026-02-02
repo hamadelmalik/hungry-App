@@ -42,7 +42,7 @@ class CartRepo {
   ///------------ermove cart--------------
   Future<void> removeCartItem(int id) async {
     try {
-      final res = await apiServices.delete('/cart/remove/{id}',{});
+      final res = await apiServices.delete('/cart/remove/$id',{});
       log("🔍🔍🔍🔍🔍🔍🔍 CART remove : $res");
       if (res['code'] == 200 && res['data'] == null) {
 
