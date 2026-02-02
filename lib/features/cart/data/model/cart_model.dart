@@ -3,25 +3,27 @@ class CartModel {
   final int productId;
   final int quantity;
   final double spicy;
-  final List<int> ?toppings;
-  final List<int> ?options;
+  final List<int> toppings;
+
+  final List<int> options;
 
   CartModel({
     required this.productId,
     required this.quantity,
     required this.spicy,
-    required this.toppings,
-    required this.options,
+    this.toppings = const [],
+    this.options = const [],
   });
 
   Map<String, dynamic> toJson() => {
     "product_id": productId,
     "quantity": quantity,
-    "spicy": spicy,
-    if (toppings != null) "toppings": toppings,
-    if (options != null) "side_options": options,
+    'spicy': spicy,
+     "toppings": toppings,
+   "side_options": options,
   };
 }
+
 class CartRequestModel {
   final List<CartModel> items;
 
@@ -31,45 +33,58 @@ class CartRequestModel {
     "items": items.map((e) => e.toJson()).toList(),
   };
 }
+
 //-------response  from Backend---------------
 class GetCartResponseModel {
   final int code;
   final String message;
-  final CartDataModel cartdata;
+  final CartDataModel cartData;
 
-  GetCartResponseModel(
-      {required this.code, required this.message, required this.cartdata});
+  GetCartResponseModel({
+    required this.code,
+    required this.message,
+    required this.cartData,
+  });
 
-  factory GetCartResponseModel.fromJson(Map<String, dynamic> json){
+  factory GetCartResponseModel.fromJson(Map<String, dynamic> json) {
     return GetCartResponseModel(
-        code: json['code'],
-        message: json['message'],
-        cartdata: CartDataModel.fromJson(json['data']));
-  }
-}
-class CartDataModel{
-  final int id;
-  final String totalPrice;
-  final List<CartItemModel> items;
-  CartDataModel({required this.id ,required this.totalPrice ,required this.items});
-
-  factory CartDataModel.fromJson(Map<String,dynamic> json){
-    return CartDataModel(id: json['id'],
-        totalPrice:json['totalPrice'] ,
-      items: (json['items'] as List? ?? [])
-          .map((e) => CartItemModel.fromJson(e))
-          .toList(),
-
+      code: json['code'] ?? 200,
+      message: json['message']?.toString() ?? '',
+      cartData: CartDataModel.fromJson(json['data']),
     );
   }
 }
+
+class CartDataModel {
+  final int id;
+
+  final String totalPrice;
+  final List<CartItemModel> items;
+
+  CartDataModel({
+    required this.id,
+    required this.totalPrice,
+    required this.items,
+  });
+
+  factory CartDataModel.fromJson(Map<String, dynamic> json) {
+    return CartDataModel(
+      id: json['id'] ?? 0,
+      totalPrice: json['totalPrice']?.toString() ?? '0',
+      items: (json['items'] as List? ?? [])
+          .map((e) => CartItemModel.fromJson(e))
+          .toList(),
+    );
+  }
+}
+
 class CartItemModel {
   final int itemId;
   final int productId;
   final String name;
   final String image;
   final int quantity;
-  final String price;
+  final double price;
   final double spicy;
   final List<int> topping;
   final List<int> sideOption;
@@ -93,11 +108,10 @@ class CartItemModel {
       name: json['name'] ?? '',
       image: json['image'] ?? '',
       quantity: json['quantity'] ?? 0,
-      price: json['price'].toString(),
-      spicy: (json['spicy'] as num?)?.toDouble() ?? 0.0,
+      price: double.tryParse(json['price'].toString()) ?? 0.0,
+      spicy: double.tryParse(json['spicy'].toString()) ?? 0.0,
       topping: List<int>.from(json['topping'] ?? []),
       sideOption: List<int>.from(json['side_option'] ?? []),
     );
   }
-
 }

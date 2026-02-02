@@ -1,4 +1,3 @@
-
 import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
@@ -9,7 +8,7 @@ import 'package:hungry/core/network/api_error.dart';
 import 'package:hungry/features/cart/data/model/cart_model.dart';
 import 'package:hungry/features/cart/data/repo/cart_repo.dart';
 import 'package:hungry/features/home/data/model/topping_model.dart';
-import 'package:hungry/features/home/data/repo/prodect_repo.dart';
+import 'package:hungry/features/home/data/repo/product_repo.dart';
 import 'package:hungry/features/product/view/widget/custom_bottom.dart';
 import 'package:hungry/features/product/view/widget/ingredient_card.dart';
 import 'package:hungry/features/product/view/widget/spicy_slider.dart';
@@ -31,7 +30,7 @@ class ProductDetailsView extends StatefulWidget {
 
 class _ProductDetailsViewState extends State<ProductDetailsView> {
   double spicyValue = 0.5;
-  bool isLoading=false;
+  bool isLoading = false;
 
   List<int> selectedTopping = [];
   List<int> selectedOptions = [];
@@ -41,14 +40,13 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
   List<ToppingModel>? options;
 
   Future<void> getToppings() async {
-  try{
-    final res = await productRepo.getTopping();
-    setState(() => toppings = res);
-//    selectedTopping = [];
-  }catch (e){
-    throw ApiError(message: e.toString());
-  }
-
+    try {
+      final res = await productRepo.getTopping();
+      setState(() => toppings = res);
+      //    selectedTopping = [];
+    } catch (e) {
+      throw ApiError(message: e.toString());
+    }
   }
 
   //-----options-----
@@ -57,7 +55,7 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
     final res = await productRepo.getOption();
     setState(() {
       options = res;
-     // selectedOptions = [];
+      // selectedOptions = [];
     });
   }
 
@@ -114,7 +112,7 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: List.generate(toppings?.length ?? 4, (index) {
-                        // final isSelected = selectedOptions == index;
+                      // final isSelected = selectedOptions == index;
                       final topping = toppings?[index];
                       final id = topping?.id ?? 1;
 
@@ -201,15 +199,12 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
           ),
         ),
         bottomSheet: Container(
-          height: 150,
+          height: 120,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                ColorPalette.primaryColor.withValues(alpha: 0.7),
-                ColorPalette.primaryColor,
-                ColorPalette.primaryColor,
-                ColorPalette.primaryColor,
-                ColorPalette.primaryColor,
+                ColorPalette.primaryColor.withValues(alpha: 0.9),
+                ColorPalette.primaryColor.withValues(alpha: 0.2),
               ],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
@@ -243,7 +238,9 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
                   ],
                 ),
                 CustomButton(
-                  widget: isLoading ? CupertinoActivityIndicator(color: Colors.white,):Icon(CupertinoIcons.cart_badge_plus),
+                  widget: isLoading
+                      ? CupertinoActivityIndicator(color: Colors.white)
+                      : Icon(CupertinoIcons.cart_badge_plus),
                   gap: 10,
                   height: 48,
                   color: Colors.white,
@@ -251,29 +248,68 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
                   text: 'Add To Cart',
 
                   onTap: () async {
-                    final cartItems1 = CartModel(
-                      productId: 1,
-                      quantity: 2,
-                      spicy: 0.1,
-                      toppings: [1,2,3],
-                      options: [1,2,3],
-                    );
+                    setState(() => isLoading = true);
 
-                    final cartItems2 = CartModel(
-                      productId: 3,
-                      quantity: 1,
-                      spicy: 0.0, // لو مفيش spicy
-                      toppings: [],
-                      options: [],
-                    );
-                    final cartRequest = CartRequestModel(items: [cartItems1, cartItems2]);
-                    log('Cart JSON: ${cartRequest.toJson()}');
-                    await cartRepo.addToCart(
-                      CartRequestModel(items: [cartItems1, cartItems2]),
-                    );
+                    try {
+                      // المنتج اللي المستخدم اختاره
+                      final cartItem = CartModel(
+                        productId: widget.productId,
+                        quantity: 1,
+                        spicy: spicyValue,
+                        toppings: selectedTopping,
+                        options: selectedOptions,
+                      );
 
+                      // جلب بيانات الكارت الحالية
+                      final cartData = await cartRepo.getCartData();
+                      final existingItems = cartData.cartData.items;
 
-                  }
+                      final messenger = ScaffoldMessenger.of(context);
+                      // فحص إذا المنتج موجود مسبقاً
+                      final index = existingItems.indexWhere(
+                        (item) => item.productId == cartItem.productId,
+                      );
+
+                      if (index != -1) {
+                        log('❌❌❌ ExistingItems ');
+                        // المنتج موجود بالفعل
+
+                        messenger.showSnackBar(
+                          SnackBar(
+                            content: Text('هذا المنتج موجود بالفعل في الكارت'),
+                          ),
+                        );
+                      } else {
+                        await cartRepo.addToCart(
+                          CartRequestModel(items: [cartItem]),
+                        );
+
+                        messenger.showSnackBar(
+                          SnackBar(content: Text('تم إضافة المنتج للكارت')),
+                        );
+                        await cartRepo.addToCart(
+                          CartRequestModel(items: [cartItem]),
+                        );
+
+                        // 🔥 جيب الكارت من جديد
+                        final updatedCart = await cartRepo.getCartData();
+
+                        final totalCount = updatedCart.cartData.items.fold<int>(
+                          0,
+                          (sum, item) => sum + item.quantity,
+                        );
+
+                        log('Total items count is ${totalCount.toString()}');
+                      }
+                    } catch (e) {
+                      log('❌ Add to cart error: $e');
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('حدث خطأ أثناء إضافة المنتج')),
+                      );
+                    } finally {
+                      setState(() => isLoading = false);
+                    }
+                  },
                 ),
               ],
             ),

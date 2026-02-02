@@ -7,6 +7,8 @@ abstract class ColorPalette {
   static const Color aje = Color(0xFFEFDDBB);
   static const Color darkMocha =  Color(0xFF332723);
   static const Color deepMidnightBlue =  Color(0xFF091C2A);
+  static const Color realColor =  Color(0xFFE93918);
+
 
 
 

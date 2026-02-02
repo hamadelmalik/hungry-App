@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hungry/features/home/data/model/product_model.dart';
-import 'package:hungry/features/home/data/repo/prodect_repo.dart';
+import 'package:hungry/features/home/data/repo/product_repo.dart';
 import 'package:hungry/features/home/view/widget/card_item.dart';
 import 'package:hungry/features/home/view/widget/catogery_home.dart';
 import 'package:hungry/features/home/view/widget/search_widget.dart';
