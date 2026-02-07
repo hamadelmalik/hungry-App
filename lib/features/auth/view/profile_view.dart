@@ -31,15 +31,17 @@ class _ProfileViewState extends State<ProfileView> {
   final TextEditingController _visa = TextEditingController();
   bool isLoading = false;
   bool isLogoutLoading = false;
-  UserModel? userModel;
+  int currentIndex = 0;
   String? selectImage;
-  bool isGuest=false;
+  bool isGuest = false;
   final AuthRepo authRepo = AuthRepo();
+  UserModel? userModel;
 
   //--------getProfileData--------------//
   Future<void> getProfileData() async {
     try {
       final user = await authRepo.getProfileData();
+
       if (!mounted) return;
       setState(() {
         userModel = user;
@@ -48,7 +50,7 @@ class _ProfileViewState extends State<ProfileView> {
       String errorMsg = 'Profile Error';
 
       if (e is ApiError) {
-        throw errorMsg = e.message.toString();
+        errorMsg = e.message.toString();
       }
 
       ScaffoldMessenger.of(context).showSnackBar(customSnack(errorMsg));
@@ -72,7 +74,7 @@ class _ProfileViewState extends State<ProfileView> {
   Future<void> updateProfileData() async {
     try {
       log('updateProfileData in process');
-      setState(()=> isLoading=true);
+      setState(() => isLoading = true);
       final user = await authRepo.updateProfileData(
         name: _name.text.trim(),
         email: _email.text.trim(),
@@ -80,41 +82,56 @@ class _ProfileViewState extends State<ProfileView> {
         visa: _visa.text.trim(),
         imagePath: selectImage,
       );
-      setState(()=> isLoading=false);
+      setState(() => getProfileData());
+      setState(() => isLoading = false);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         customSnack(
           'Update Profile Successfully',
           color: Colors.green,
-          iconData: CupertinoIcons.check_mark_circled_solid,// اللون أخضر للنجاح
-        )
-
-
+          iconData:
+              CupertinoIcons.check_mark_circled_solid, // اللون أخضر للنجاح
+        ),
       );
 
-      setState(()=> userModel=user);
+      setState(() => userModel = user);
       await getProfileData();
     } catch (e) {
-      setState(()=> isLoading=false);
+      setState(() => isLoading = false);
+      log("New image path: ${userModel!.image}");
+      log("New visa: ${userModel!.visa}");
       String errorMsg = 'update profile';
 
       if (e is ApiError) {
-        throw errorMsg = e.message.toString();
+        errorMsg = e.message.toString();
       }
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(customSnack(errorMsg));
     }
   }
-//--------logout--------------//
-  Future<void>logout()async{
-    setState(()=> isLogoutLoading=true);
-    await authRepo.logout();
-    setState(()=> isLogoutLoading=false);
-    if (!mounted) return;
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => LoginView()),
-    );
+
+  //--------logout--------------//
+  Future<void> logout() async {
+    setState(() => isLogoutLoading = true);
+
+    try {
+      await authRepo.logout();
+
+      if (!mounted) return;
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => LoginView()),
+      );
+
+    } catch (e, s) {
+      log("❌ LOGOUT ERROR: $e");
+      log("STACK TRACE: $s");
+    } finally {
+      if (mounted) {
+        setState(() => isLogoutLoading = false);
+      }
+    }
   }
 
   void clearImage() {
@@ -122,20 +139,21 @@ class _ProfileViewState extends State<ProfileView> {
       selectImage = null;
     });
   }
+
   //----------autologin---------..
-  Future<void>autoLogin()async{
+  Future<void> autoLogin() async {
     final user = await authRepo.autoLogin();
-    setState(() =>isGuest=authRepo.isGuest);
-    if(user !=null){
-      setState(() =>isGuest=authRepo.isGuest);
+    setState(() => isGuest = authRepo.isGuest);
+    if (user != null) {
+      setState(() => isGuest = authRepo.isGuest);
     }
   }
 
   @override
   void initState() {
-    autoLogin();
-    super.initState();
 
+    super.initState();
+    autoLogin();
     // تحميل بيانات المستخدم
     getProfileData()
         .then((v) {
@@ -144,7 +162,8 @@ class _ProfileViewState extends State<ProfileView> {
           log('Name: ${userModel?.name}');
           log('Email: ${userModel?.email}');
           log('Address: ${userModel?.address}');
-          log('VISA FROM API => ${userModel?.visa}');
+          log('🔐🔐🔐VISA FROM API => ${userModel?.visa}');
+          log('🔐🔐🔐image FROM API => ${userModel?.image}');
 
           // تحديث TextEditingControllers
           _name.text = userModel?.name.toString() ?? 'hamad';
@@ -168,7 +187,7 @@ class _ProfileViewState extends State<ProfileView> {
 
   @override
   Widget build(BuildContext context) {
-    if(!isGuest) {
+    if (!isGuest) {
       return Scaffold(
         // backgroundColor:  ColorPalette.aje,
         appBar: AppBar(
@@ -191,16 +210,13 @@ class _ProfileViewState extends State<ProfileView> {
                 child: Column(
                   children: [
                     Row(
-
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-
                         GestureDetector(
-                          onTap: () =>
-                              Navigator.popUntil(
-                                context,
-                                    (route) => route.isFirst,
-                              ),
+                          onTap: () => Navigator.popUntil(
+                            context,
+                            (route) => route.isFirst,
+                          ),
                           child: Icon(
                             Icons.arrow_back,
                             color: ColorPalette.primaryColor,
@@ -231,13 +247,13 @@ class _ProfileViewState extends State<ProfileView> {
                         child: selectImage != null
                             ? Image.file(File(selectImage!), fit: BoxFit.cover)
                             : (userModel?.image != null &&
-                            userModel!.image!.isNotEmpty)
+                                  userModel!.image!.isNotEmpty)
                             ? Image.network(
-                          userModel!.image!,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, err, builder) =>
-                              Icon(Icons.person),
-                        )
+                                userModel!.image!,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, err, stackTrace) =>
+                                    Icon(Icons.person),
+                              )
                             : Icon(Icons.person),
                       ),
                     ),
@@ -256,7 +272,6 @@ class _ProfileViewState extends State<ProfileView> {
                         ),
                         //------clearImage------
                         CustomAuthBottom(
-
                           height: 30,
                           width: 100,
                           onTap: clearImage,
@@ -267,7 +282,6 @@ class _ProfileViewState extends State<ProfileView> {
                         ),
                       ],
                     ),
-
 
                     Gap(15),
                     CustomProfileTextFiled(controller: _name, label: 'Name'),
@@ -281,54 +295,54 @@ class _ProfileViewState extends State<ProfileView> {
                     Gap(10),
                     Divider(color: ColorPalette.primaryColor),
                     Gap(10),
+
                     //---visa--------------
-                    userModel?.visa != null
+                    userModel?.visa == null
                         ? CustomProfileTextFiled(
-                      controller: _visa,
-                      label: 'visa',
-                      textInputType: TextInputType.number,
-                    )
+                            controller: _visa,
+                            label: 'visa',
+                            textInputType: TextInputType.number,
+                          )
                         : ListTile(
-                      onTap: () {},
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      contentPadding: EdgeInsets.symmetric(
-                        vertical: 8,
-                        horizontal: 16,
-                      ),
+                            onTap: () {},
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            contentPadding: EdgeInsets.symmetric(
+                              vertical: 8,
+                              horizontal: 16,
+                            ),
 
-                      tileColor: Colors.blue.shade900,
-                      leading: Image.asset(AssetsPath.Asset, width: 50),
-                      title: const CustomText(
-                        text: 'Debit card',
-                        color: Colors.white,
-                        fontSize: 18,
-                      ),
-                      subtitle: CustomText(
-                        text: (() {
-                          final visa = userModel?.visa?.toString();
+                            tileColor: Colors.blue.shade900,
+                            leading: Image.asset(AssetsPath.Asset, width: 50),
+                            title: const CustomText(
+                              text: 'Debit card',
+                              color: Colors.white,
+                              fontSize: 18,
+                            ),
+                            subtitle: CustomText(
+                              text: (() {
+                                final visa = userModel?.visa;
 
-                          if (visa != null &&
-                              visa
-                                  .trim()
-                                  .isNotEmpty &&
-                              visa.toLowerCase() != 'null') {
-                            return visa; // عرض الرقم كامل
-                          }
+                                if (visa != null &&
+                                    visa.trim().isNotEmpty &&
+                                    visa.toLowerCase() != 'null') {
+                                  return visa; // عرض الرقم كامل
+                                }
 
-                          return '*****1235';
-                        })(),
-                        color: Colors.white,
-                        fontSize: 18,
-                      ),
+                                return '*****1235';
+                              })(),
+                              color: Colors.white,
+                              fontSize: 18,
+                            ),
 
-                      trailing: CustomText(
-                        text: 'Default',
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                            trailing: CustomText(
+                              text: 'Default',
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
                     Gap(20),
                   ],
                 ),
@@ -365,20 +379,20 @@ class _ProfileViewState extends State<ProfileView> {
                         child: isLoading
                             ? CupertinoActivityIndicator()
                             : Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            CustomText(
-                              text: 'Edit Profile',
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            Icon(
-                              Icons.edit_document,
-                              color: ColorPalette.primaryColor,
-                            )
-                          ],
-                        ),
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  CustomText(
+                                    text: 'Edit Profile',
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  Icon(
+                                    Icons.edit_document,
+                                    color: ColorPalette.primaryColor,
+                                  ),
+                                ],
+                              ),
                       ),
                     ),
                   ),
@@ -387,6 +401,7 @@ class _ProfileViewState extends State<ProfileView> {
                 Expanded(
                   child: InkWell(
                     onTap: logout,
+
                     child: Container(
                       padding: EdgeInsets.all(10),
                       height: 60,
@@ -402,31 +417,28 @@ class _ProfileViewState extends State<ProfileView> {
                         child: isLogoutLoading
                             ? CupertinoActivityIndicator(color: Colors.white)
                             : Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            CustomText(
-                              text: 'Logout',
-                              fontSize: 18,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            Icon(Icons.logout, color: Colors.white)
-                          ],
-                        ),
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  CustomText(
+                                    text: 'Logout',
+                                    fontSize: 18,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  Icon(Icons.logout, color: Colors.white),
+                                ],
+                              ),
                       ),
-                    ),
-                  ),
+                    ),                 ),
                 ),
               ],
-            )
-            ,
+            ),
           ),
         ),
       );
-    }else if(isGuest){
+    } else if (isGuest) {
       return GuestModeView();
-
     }
     return SizedBox();
   }

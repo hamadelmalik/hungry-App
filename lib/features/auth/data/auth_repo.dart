@@ -170,16 +170,26 @@ class AuthRepo {
   //-----------logout-----------//
 
   Future<void> logout() async {
-    final response = await apiServices.post('/logout', {});
-    if (response['data'] != null) {
-      throw ApiError(message: 'api errors');
+    try {
+      final response = await apiServices.post('/logout', {});
+      log("Logout response: $response");
+
+      // تأكد من التحويل الصحيح
+      int? code = int.tryParse(response['code'].toString());
+
+      if (code == 200) {
+        // نجاح
+        log("✅ Logged out successfully");
+      } else {
+        // فشل
+        log("❌ Logout failed, code: $code");
+      }
+    } catch (e) {
+      log("❌ LOGOUT ERROR: $e");
+
     }
 
-    await PrefHelper.clearToken();
-    isGuest = true;
-    _currentUser = null;
   }
-
   //-------continue as guest--------
 
   Future<void> continueAsGuest() async {

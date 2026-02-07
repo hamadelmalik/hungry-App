@@ -1,36 +1,61 @@
-
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:hungry/core/constants/assets_app.dart';
 import 'package:hungry/core/constants/color_palette.dart';
+import 'package:hungry/shared/custom_text.dart';
 
 class UserHeader extends StatelessWidget {
-  const UserHeader({super.key});
+  const UserHeader({
+    super.key,
+    required this.userName,
+    required this.userImage,
+  });
+
+  final String userName, userImage;
 
   @override
   Widget build(BuildContext context) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        SvgPicture.asset(
-          AssetsPath.hungryTex,
-          width: 150,
-          colorFilter: ColorFilter.mode(
-            ColorPalette.primaryColor,
-            BlendMode.srcIn,
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                CustomText(
+                  text: 'Hello,',
+                  fontSize: 22,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.grey.shade500,
+                ),
+                CustomText(
+                  text: userName,
+                  fontSize: 22,
+                  fontWeight: FontWeight.w200,
+                  color: ColorPalette.primaryColor,
+                ),
+              ],
+            ),
+
+            CustomText(
+              text: 'Real Burger & Pizza',
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: Colors.red,
+            ),
+          ],
+        ),
+        Spacer(),
+        CircleAvatar(
+          radius: 30,
+          child: ClipOval(
+            child: Image.network(
+              userImage,
+              fit: BoxFit.cover,
+              width: 60,
+              height: 60,
+            ),
           ),
         ),
-        const Spacer(),
-        const CircleAvatar(
-          backgroundColor: ColorPalette.primaryColor,
-            child: Icon(
-              Icons.person,
-              size: 30, // أو أي حجم مناسب
-              color: Colors.white,
-            ),
-            radius: 30),
       ],
     );
-
   }
 }

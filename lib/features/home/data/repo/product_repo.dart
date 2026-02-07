@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:hungry/core/network/api_services.dart';
 import 'package:hungry/features/home/data/model/product_model.dart';
 import 'package:hungry/features/home/data/model/topping_model.dart';
@@ -20,7 +19,7 @@ class ProductRepo {
     }
   }
 
-  //-getTopping-----------
+  //-------------getTopping-----------//
   Future<List<ToppingModel>> getTopping() async {
     try {
       final response = await apiServices.get('/toppings');
@@ -33,6 +32,7 @@ class ProductRepo {
       return [];
     }
   }
+
 //-------------getOPTION-----------
   Future<List<ToppingModel>> getOption() async {
     try {
@@ -47,11 +47,22 @@ class ProductRepo {
     }
   }
 
+//----------------searchProduct----------------------//
+  Future<List<ProductModel>> searchProducts(String name) async {
+    try {
+      final response = await apiServices.get('/products', param:{'name':name});
+      return (response['data'] as List)
+          .map((product) => ProductModel.fromJson(product))
+          .toList();
+    } catch (e) {
 
+      log(e.toString());
+      return [];
+    }
+  }
+//----------------------category -------------
 
 
 }
 
 
-
-//searchProduct-------------

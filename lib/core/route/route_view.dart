@@ -14,65 +14,74 @@ class PageRouteView extends StatefulWidget {
 }
 
 class _PageViewRouteState extends State<PageRouteView> {
-  late PageController pageController;
-
   int currentPage = 0;
 
-  late List<Widget> pageList;
+  late final List<Widget> pageList;
 
   @override
   void initState() {
-    pageList = [HomeView(), CartView(), OrderHistoryView(), ProfileView()];
-    pageController = PageController(initialPage: currentPage);
     super.initState();
+    pageList =  [
+      HomeView(),
+      CartView(),
+      OrderHistoryView(),
+      ProfileView(),
+    ];
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return PopScope(
+      canPop: currentPage == 0,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop && currentPage != 0) {
+          setState(() => currentPage = 0);
+        }
+      },
 
-      body: PageView(
-        physics: NeverScrollableScrollPhysics(),
-        controller: pageController,
-        children: pageList,
-      ),
 
-      bottomNavigationBar: ClipRRect(
-
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
+      child: Scaffold(
+        body: IndexedStack(
+          index: currentPage,
+          children: pageList,
         ),
-        child: BottomNavigationBar(
-          backgroundColor: ColorPalette.primaryColor,
-          type: BottomNavigationBarType.fixed,
-          currentIndex: currentPage,
-          selectedItemColor: Colors.yellow,
-          unselectedItemColor: Colors.white,
-          onTap: (index) {
-            setState(() {
-              currentPage = index;
-            });
-            pageController.jumpToPage(index);
-          },
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(CupertinoIcons.home),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(CupertinoIcons.cart),
-              label: 'Cart',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.restaurant),
-              label: 'OrderHistory',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(CupertinoIcons.profile_circled),
-              label: 'Profile',
-            ),
-          ],
+
+        bottomNavigationBar: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+
+          child: BottomNavigationBar(
+            backgroundColor: ColorPalette.primaryColor,
+            type: BottomNavigationBarType.fixed,
+            currentIndex: currentPage,
+            selectedItemColor: Colors.yellow,
+            unselectedItemColor: Colors.white,
+            onTap: (index) {
+              setState(() {
+                currentPage = index;
+              });
+            },
+            items: const [
+              BottomNavigationBarItem(
+                icon: Icon(CupertinoIcons.home),
+                label: 'Home',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(CupertinoIcons.cart),
+                label: 'Cart',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.restaurant),
+                label: 'OrderHistory',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(CupertinoIcons.profile_circled),
+                label: 'Profile',
+              ),
+            ],
+          ),
         ),
       ),
     );

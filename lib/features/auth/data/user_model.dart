@@ -26,7 +26,7 @@ class UserModel {
       image: json['image'].toString(),
       token: json['token'],
       address: json['address'].toString(),
-      visa: json['Visa'].toString(),
+      visa: json['Visa']?.toString(),
     );
   }
 }

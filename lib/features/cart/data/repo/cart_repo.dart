@@ -14,7 +14,7 @@ class CartRepo {
         log('✅ Success! Product added to cart: ${res['message']}');
         return; // نهاية الدالة بعد نجاح العملية
       } else {
-        // لو السيرفر رجع أي خطأ
+
         throw ApiError(
           message: res['message'] ?? 'Unexpected response from server',
         );
@@ -39,7 +39,7 @@ class CartRepo {
     }
   }
 
-  ///------------ermove cart--------------
+    ///------------ermove cart--------------
   Future<void> removeCartItem(int id) async {
     try {
       final res = await apiServices.delete('/cart/remove/$id',{});

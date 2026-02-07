@@ -5,9 +5,9 @@ import 'package:hungry/core/network/dio_clint.dart';
 class ApiServices {
   final DioClint dioClint = DioClint();
 
-  Future<dynamic> get(String endPoint) async {
+  Future<dynamic> get(String endPoint,{dynamic param}) async {
     try {
-      final response = await dioClint.dio.get(endPoint);
+      final response = await dioClint.dio.get(endPoint,queryParameters: param);
       return response.data;
     } on DioException catch (e) {
       throw ApiExpectations.handleError(e);
