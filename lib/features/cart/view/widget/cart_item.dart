@@ -43,7 +43,7 @@ class CustomCartItem extends StatelessWidget {
                     GestureDetector(
                       onTap: onAdd,
                       child: CircleAvatar(
-                        radius: 30,                  // نصف القطر
+                        radius: 20,                  // نصف القطر
                         backgroundColor: ColorPalette.primaryColor, // 👈 لون الخلفية
                         child: Icon(CupertinoIcons.add, color: Colors.white),
                       ),

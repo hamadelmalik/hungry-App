@@ -49,7 +49,7 @@ class _SplashScreenState extends State<SplashScreen>
     try {
       final user = await authRepo.autoLogin();
 
-      if (!mounted) return;
+     // if (!mounted) return;
 
       if (authRepo.isLoggedIn || authRepo.isGuest) {
         Navigator.pushReplacement(
@@ -91,7 +91,7 @@ class _SplashScreenState extends State<SplashScreen>
               mainAxisSize: MainAxisSize.min,
               children: [
                 Image.asset(
-                  'assets/images/rwalreallogo.png',
+                  'assets/images/lastlogo.png',
                   fit: BoxFit.contain,
 
                 ),

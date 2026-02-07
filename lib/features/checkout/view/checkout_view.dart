@@ -8,7 +8,10 @@ import 'package:hungry/shared/custom_btn.dart';
 import 'package:hungry/shared/custom_text.dart';
 
 class CheckoutView extends StatefulWidget {
-  const CheckoutView({super.key});
+  final String totalPrice;
+  const CheckoutView({super.key, required this.totalPrice});
+
+
 
   @override
   State<CheckoutView> createState() => _CheckoutViewState();
@@ -50,12 +53,19 @@ class _CheckoutViewState extends State<CheckoutView> {
                   text: 'Order Summary',
                   fontWeight: FontWeight.bold,
                   fontSize: 25,
+
                 ),
                 OrderDetailsWidget(
-                  order: '20',
+                  order: widget.totalPrice,
                   taxes: '0.3',
                   fees: '0.2',
-                  total: '18',
+                  total: (double.parse(widget.totalPrice.toString())
+                      + double.parse('0.3')
+                      + double.parse('0.2')).toString(),
+
+
+
+
                 ),
 
                 Gap(20),
@@ -85,7 +95,8 @@ class _CheckoutViewState extends State<CheckoutView> {
                   title: const CustomText(
                     text: 'Cash on Delivery',
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: 16,
+                    fontWeight:FontWeight.bold,
                   ),
                   trailing: Radio<String>(
                     value: 'cash',
@@ -119,12 +130,14 @@ class _CheckoutViewState extends State<CheckoutView> {
                   title: const CustomText(
                     text: 'Debit card',
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: 16,
+                    fontWeight:FontWeight.bold,
+
                   ),
                   subtitle: const CustomText(
                     text: '******2345',
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: 16,
                   ),
                   trailing: Radio<String>(
                     value: 'dept',
@@ -177,26 +190,29 @@ class _CheckoutViewState extends State<CheckoutView> {
                 children: [
                   CustomText(
                     text: 'Total',
-                    fontSize: 20,
+                    fontSize: 16,
                     color: Colors.black,
                     fontWeight: FontWeight.w600,
                   ),
+
                   CustomText(
-                    text: '33\$',
-                    fontSize: 20,
+                    text: (double.parse(widget.totalPrice.toString())
+                        + double.parse('0.3')
+                        + double.parse('0.2')).toString(),
+                    fontSize: 16,
                     color: Colors.black,
                     fontWeight: FontWeight.w600,
                   ),
                 ],
               ),
               CustomBtn(
-                heightSize: 70,
+                heightSize: 50,
                 widthSize: 150,
                 backgroundColor: ColorPalette.primaryColor,
                 child: CustomText(
-                  text: 'Add To Cart',
+                  text: 'Pay Now',
                   color: Colors.white,
-                  fontSize: 22,
+                  fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
                 onTap: () {

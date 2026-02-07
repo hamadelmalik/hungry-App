@@ -31,24 +31,28 @@ class _ProfileViewState extends State<ProfileView> {
   final TextEditingController _visa = TextEditingController();
   bool isLoading = false;
   bool isLogoutLoading = false;
-  UserModel? userModel;
+
   String? selectImage;
   bool isGuest=false;
   final AuthRepo authRepo = AuthRepo();
+  UserModel? userModel;
 
   //--------getProfileData--------------//
   Future<void> getProfileData() async {
     try {
       final user = await authRepo.getProfileData();
+
       if (!mounted) return;
       setState(() {
         userModel = user;
+
+
       });
     } catch (e) {
       String errorMsg = 'Profile Error';
 
       if (e is ApiError) {
-        throw errorMsg = e.message.toString();
+         errorMsg = e.message.toString();
       }
 
       ScaffoldMessenger.of(context).showSnackBar(customSnack(errorMsg));
@@ -80,6 +84,7 @@ class _ProfileViewState extends State<ProfileView> {
         visa: _visa.text.trim(),
         imagePath: selectImage,
       );
+      setState(()=> getProfileData());
       setState(()=> isLoading=false);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -96,10 +101,12 @@ class _ProfileViewState extends State<ProfileView> {
       await getProfileData();
     } catch (e) {
       setState(()=> isLoading=false);
+      log("New image path: ${userModel!.image}");
+      log("New visa: ${userModel!.visa}");
       String errorMsg = 'update profile';
 
       if (e is ApiError) {
-        throw errorMsg = e.message.toString();
+         errorMsg = e.message.toString();
       }
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(customSnack(errorMsg));
@@ -144,7 +151,8 @@ class _ProfileViewState extends State<ProfileView> {
           log('Name: ${userModel?.name}');
           log('Email: ${userModel?.email}');
           log('Address: ${userModel?.address}');
-          log('VISA FROM API => ${userModel?.visa}');
+          log('🔐🔐🔐VISA FROM API => ${userModel?.visa}');
+          log('🔐🔐🔐image FROM API => ${userModel?.image}');
 
           // تحديث TextEditingControllers
           _name.text = userModel?.name.toString() ?? 'hamad';
@@ -230,13 +238,11 @@ class _ProfileViewState extends State<ProfileView> {
                         clipBehavior: Clip.antiAlias,
                         child: selectImage != null
                             ? Image.file(File(selectImage!), fit: BoxFit.cover)
-                            : (userModel?.image != null &&
-                            userModel!.image!.isNotEmpty)
+                            : (userModel?.image != null && userModel!.image!.isNotEmpty)
                             ? Image.network(
                           userModel!.image!,
                           fit: BoxFit.cover,
-                          errorBuilder: (context, err, builder) =>
-                              Icon(Icons.person),
+                          errorBuilder: (context, err, stackTrace) => Icon(Icons.person),
                         )
                             : Icon(Icons.person),
                       ),
@@ -307,7 +313,7 @@ class _ProfileViewState extends State<ProfileView> {
                       ),
                       subtitle: CustomText(
                         text: (() {
-                          final visa = userModel?.visa?.toString();
+                          final visa = userModel?.visa;
 
                           if (visa != null &&
                               visa

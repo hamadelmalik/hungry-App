@@ -1,5 +1,12 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:hungry/core/constants/color_palette.dart';
+import 'package:hungry/core/network/api_error.dart';
+import 'package:hungry/features/auth/data/auth_repo.dart';
+import 'package:hungry/features/auth/data/user_model.dart';
+import 'package:hungry/features/auth/view/widget/guest_mode.dart';
 import 'package:hungry/features/cart/data/model/cart_model.dart';
 import 'package:hungry/features/cart/data/repo/cart_repo.dart';
 import 'package:hungry/features/cart/view/widget/custom_cart_item.dart';
@@ -19,6 +26,27 @@ class _CartViewState extends State<CartView> {
   late List<int> quantities = [];
   bool isLoading = false;
   bool isLoadingRemove = false;
+  int? removingItemId;
+  bool isGuest=false;
+  final AuthRepo authRepo = AuthRepo();
+  UserModel? userModel;
+  Future<void> getProfileData() async {
+    try {
+      final user = await authRepo.getProfileData();
+      if (!mounted) return;
+      setState(() {
+        userModel = user;
+      });
+    } catch (e) {
+      String errorMsg = 'Profile Error';
+
+      if (e is ApiError) {
+        throw errorMsg = e.message.toString();
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(customSnack(errorMsg));
+    }
+  }
 
   void onAdd(int index) {
     setState(() {
@@ -42,10 +70,7 @@ class _CartViewState extends State<CartView> {
 
       setState(() => isLoading = true);
       final res = await cartRepo.getCartData();
-
-
-
-      final itemCount = res.cartData.items.length ;
+       final itemCount = res.cartData.items.length ;
       setState(() {
         cartResponse = res;
         quantities = List.generate(itemCount, (_) => 1);
@@ -59,9 +84,10 @@ class _CartViewState extends State<CartView> {
   
   Future<void>removeCartItem(int id)async{
     try{
-      setState(() => isLoadingRemove=true);
-      final res =await cartRepo.removeCartItem(id);
-      setState(() => isLoadingRemove=false);
+     // setState(() => isLoadingRemove=true)
+      await cartRepo.removeCartItem(id);
+
+    //  setState(() => isLoadingRemove=false);
 
       customSnack('Remove Successfully');
     }catch (e){
@@ -69,15 +95,28 @@ class _CartViewState extends State<CartView> {
       customSnack(e.toString());
     }
   }
+  Future<void>autoLogin()async{
+    final user = await authRepo.autoLogin();
+    setState(() =>isGuest=authRepo.isGuest);
+    if(user !=null){
+      setState(() =>isGuest=authRepo.isGuest);
+    }
+  }
 
   @override
   void initState() {
-    getCartData();
+    if(!isGuest){
+      autoLogin();
+      getCartData();
+    }
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+
+    if(!isGuest) {
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 0,
@@ -90,7 +129,7 @@ class _CartViewState extends State<CartView> {
           children: [
             Expanded(
               child: cartResponse == null
-                  ? const Center(child: CircularProgressIndicator())
+                  ? const Center(child: CircularProgressIndicator(color: ColorPalette.primaryColor,))
                   : ListView.builder(
                       itemCount: cartResponse!.cartData.items.length,
                       itemBuilder: (context, index) {
@@ -102,8 +141,19 @@ class _CartViewState extends State<CartView> {
                           number: quantities[index],
                           onAdd: () => onAdd(index),
                           onMinus: () => onMin(index),
-                          onRemove: () {
-                            removeCartItem(item.itemId);
+                          onRemove: ()async  {
+                            setState(() {
+                              removingItemId = item.itemId;
+                            });
+                            await removeCartItem(item.itemId);
+                            await getCartData(); // هنا ممكن تسيب
+                           log('item delete ');
+                         await   getCartData();
+                            setState(() {
+                              removingItemId = null;
+                              customSnack('delete');
+                            });
+
                           },
                         );
                       },
@@ -116,8 +166,9 @@ class _CartViewState extends State<CartView> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 CustomText(
-                  text: '\$99.19',
-                  fontSize: 22,
+
+                  text: cartResponse?.cartData.totalPrice ?? '90',
+                  fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
                 Expanded(
@@ -134,14 +185,14 @@ class _CartViewState extends State<CartView> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => const CheckoutView(),
+                              builder: (_) => CheckoutView(totalPrice: cartResponse?.cartData.totalPrice ??'0.0' ,),
                             ),
                           );
                         },
                         child: const CustomText(
                           text: 'Check out',
                           color: Colors.white,
-                          fontSize: 18,
+                          fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -155,5 +206,10 @@ class _CartViewState extends State<CartView> {
         ),
       ),
     );
+    }else if(isGuest){
+      return GuestModeView();
+
+    }
+    return SizedBox();
   }
 }

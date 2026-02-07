@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:hungry/core/network/api_error.dart';
+import 'package:hungry/features/auth/data/auth_repo.dart';
+import 'package:hungry/features/auth/data/user_model.dart';
 import 'package:hungry/features/home/data/model/product_model.dart';
 import 'package:hungry/features/home/data/repo/product_repo.dart';
 import 'package:hungry/features/home/view/widget/card_item.dart';
@@ -8,6 +11,7 @@ import 'package:hungry/features/home/view/widget/catogery_home.dart';
 import 'package:hungry/features/home/view/widget/search_widget.dart';
 import 'package:hungry/features/home/view/widget/user_header.dart';
 import 'package:hungry/features/product/view/product_details_view.dart';
+import 'package:hungry/shared/custom_snak.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class HomeView extends StatefulWidget {
@@ -20,10 +24,30 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   List category = ['All', 'Combo', 'Sliders', 'Classic', 'Hot'];
   int selectedIndex = 0;
-
   List<ProductModel>? products;
+  final AuthRepo authRepo = AuthRepo();
+  UserModel? userModel;
+
 
   ProductRepo productRepo = ProductRepo();
+
+  Future<void> getProfileData() async {
+    try {
+      final user = await authRepo.getProfileData();
+      if (!mounted) return;
+      setState(() {
+        userModel = user;
+      });
+    } catch (e) {
+      String errorMsg = 'Profile Error';
+
+      if (e is ApiError) {
+         errorMsg = e.message.toString();
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(customSnack(errorMsg));
+    }
+  }
 
   Future<void> getProducts() async {
     final res = await productRepo.getProducts();
@@ -35,6 +59,7 @@ class _HomeViewState extends State<HomeView> {
   @override
   void initState() {
     getProducts();
+    getProfileData();
     super.initState();
   }
 
@@ -48,7 +73,7 @@ class _HomeViewState extends State<HomeView> {
           body: CustomScrollView(
             clipBehavior: Clip.none,
             slivers: [
-              /// header
+              //-----------------header---------------------//
               SliverAppBar(
                 elevation: 0,
                 pinned: true,
@@ -68,7 +93,15 @@ class _HomeViewState extends State<HomeView> {
                       left: 20,
                     ),
                     child: Column(
-                      children: [UserHeader(), Gap(20), SearchWidget()],
+                      children: [
+                        UserHeader(
+
+                          userName: userModel?.name ?? 'Guest',
+                          userImage: userModel?.image?? 'assets/icons/Hamburger.png',
+                        ),
+                        Gap(20),
+                        SearchWidget(),
+                      ],
                     ),
                   ),
                 ),
@@ -106,7 +139,9 @@ class _HomeViewState extends State<HomeView> {
                         onTap: () => Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (c) => ProductDetailsView(productId: product.id,
+                            builder: (c) => ProductDetailsView(
+                              productId: product.id,
+                              productPrice: product.price,
                               productImage: product.image,
                               //productImage: product.image,
                             ),

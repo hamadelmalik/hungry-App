@@ -15,13 +15,14 @@ import 'package:hungry/features/product/view/widget/spicy_slider.dart';
 import 'package:hungry/shared/custom_text.dart';
 
 class ProductDetailsView extends StatefulWidget {
-  final String productImage;
+  final String productImage, productPrice;
   final int productId;
 
   const ProductDetailsView({
     super.key,
     required this.productImage,
     required this.productId,
+    required this.productPrice,
   });
 
   @override
@@ -199,12 +200,13 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
           ),
         ),
         bottomSheet: Container(
-          height: 120,
+          height: 100,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
                 ColorPalette.primaryColor.withValues(alpha: 0.9),
-                ColorPalette.primaryColor.withValues(alpha: 0.2),
+                ColorPalette.primaryColor.withValues(alpha: 0.8),
+                ColorPalette.primaryColor.withValues(alpha: 0.9),
               ],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
@@ -216,7 +218,7 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
           ),
 
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -230,7 +232,7 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
                       color: Colors.white,
                     ),
                     CustomText(
-                      text: '\$ 18.9',
+                      text: "\$${widget.productPrice}",
                       fontSize: 20,
                       color: Colors.white,
                       fontWeight: FontWeight.w700,
