@@ -5,6 +5,7 @@ import 'package:hungry/core/network/api_error.dart';
 import 'package:hungry/core/network/api_expectations.dart';
 import 'package:hungry/core/network/api_services.dart';
 import 'package:hungry/core/utils/perf_helper.dart';
+import 'package:hungry/core/utils/response_parser.dart';
 import 'package:hungry/features/auth/data/user_model.dart';
 
 class AuthRepo {
@@ -145,12 +146,12 @@ class AuthRepo {
       }
 
       if (response is Map<String, dynamic>) {
+        final code = parseResponseCode(response) ?? 0;
         final msg = response['message'];
-        final code = response['code'];
         final data = response['data'];
-        final coder = int.tryParse(code);
 
-        if (coder != 200 && coder != 201) {
+
+        if (code != 200 && code != 201) {
           throw ApiError(message: msg ?? 'Unknown error');
         }
 
@@ -174,8 +175,8 @@ class AuthRepo {
       final response = await apiServices.post('/logout', {});
       log("Logout response: $response");
 
-      // تأكد من التحويل الصحيح
-      int? code = int.tryParse(response['code'].toString());
+      final code = parseResponseCode(response) ?? 0;
+
 
       if (code == 200) {
         // نجاح
