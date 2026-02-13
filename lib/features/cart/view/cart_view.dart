@@ -75,11 +75,12 @@ class _CartViewState extends State<CartView> {
       setState(() {
         cartResponse = res;
         quantities = List.generate(itemCount, (_) => 1);
-        isLoading = false;
+
       });
+      setState(() => isLoading = false);
     } catch (e) {
       if (!mounted) return;
-      isLoading = false;
+      setState(() => isLoading = false);
     }
   }
   
@@ -109,8 +110,6 @@ class _CartViewState extends State<CartView> {
 
       autoLogin();
       getCartData();
-
-
     super.initState();
   }
 

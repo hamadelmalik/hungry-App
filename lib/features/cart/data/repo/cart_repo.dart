@@ -1,6 +1,8 @@
 import 'dart:developer';
+import 'dart:io';
 import 'package:hungry/core/network/api_error.dart';
 import 'package:hungry/core/network/api_services.dart';
+import 'package:hungry/core/utils/response_parser.dart';
 import 'package:hungry/features/cart/data/model/cart_model.dart';
 
 class CartRepo {
@@ -9,15 +11,23 @@ class CartRepo {
   Future<void> addToCart(CartRequestModel cartData) async {
     try {
       final res = await apiServices.post('/cart/add', cartData.toJson());
-      // تحقق من كود السيرفر بدل statusCode
-      if (res['code'] == 200 || res['code'] == 201 || 'code' == 'null') {
-        log('✅ Success! Product added to cart: ${res['message']}');
-        return; // نهاية الدالة بعد نجاح العملية
-      } else {
+
+      log("🛒 ADD TO CART RAW RESPONSE: $res");
+
+
+      if (res is Map<String, dynamic>) {
+        final code = res['code'];
+
+        if (code == 200 || code == 201 ) {
+          log('✅ Success! Product added to cart: ${res['message']}');
+          return;
+        }
 
         throw ApiError(
           message: res['message'] ?? 'Unexpected response from server',
         );
+      } else {
+        throw ApiError(message: 'Invalid response format');
       }
     } catch (e) {
       log('❌ addToCart ERROR: $e');

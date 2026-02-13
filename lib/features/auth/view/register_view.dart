@@ -130,11 +130,11 @@ class _RegisterViewState extends State<RegisterView> {
                          height: 60,
                          width: double.infinity,
                          onTap: signup,
-                         text: 'SignUp',fontSize: 20,
+                         text: 'SignUp',fontSize: 14,
                        ),
                        Gap(20),
                        Row(children: [
-                         CustomText(text: 'Already have an account?',color: Colors.white,fontSize: 20,),
+                         CustomText(text: 'Already have an account?',color: Colors.white,fontSize: 14,),
                          GestureDetector(
                              onTap: (){
                                Navigator.push(context, MaterialPageRoute(builder: (context) => LoginView(),));

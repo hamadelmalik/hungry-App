@@ -10,79 +10,60 @@ class PageRouteView extends StatefulWidget {
   const PageRouteView({super.key});
 
   @override
-  State<PageRouteView> createState() => _PageViewRouteState();
+  State<PageRouteView> createState() => _PageRouteViewState();
 }
 
-class _PageViewRouteState extends State<PageRouteView> {
+class _PageRouteViewState extends State<PageRouteView> {
   int currentPage = 0;
 
-  late final List<Widget> pageList;
+  final List<Widget> _screens = const [
+    HomeView(),
+    CartView(),
+    OrderHistoryView(),
+    ProfileView(),
+  ];
 
-  @override
-  void initState() {
-    super.initState();
-    pageList =  [
-      HomeView(),
-      CartView(),
-      OrderHistoryView(),
-      ProfileView(),
-    ];
+  void _onItemTapped(int index) {
+    setState(() {
+      currentPage = index;
+    });
+
+    // هنا بنفتح الصفحة الجديدة باستخدام Navigator
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => _screens[index]),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: currentPage == 0,
-      onPopInvokedWithResult: (didPop, result) {
-        if (!didPop && currentPage != 0) {
-          setState(() => currentPage = 0);
-        }
-      },
-
-
-      child: Scaffold(
-        body: IndexedStack(
-          index: currentPage,
-          children: pageList,
-        ),
-
-        bottomNavigationBar: ClipRRect(
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
+    return Scaffold(
+      body: _screens[currentPage], // الصفحة الحالية
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: ColorPalette.primaryColor,
+        type: BottomNavigationBarType.fixed,
+        currentIndex: currentPage,
+        selectedItemColor: Colors.yellow,
+        unselectedItemColor: Colors.white,
+        onTap: _onItemTapped,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(CupertinoIcons.home),
+            label: 'Home',
           ),
-
-          child: BottomNavigationBar(
-            backgroundColor: ColorPalette.primaryColor,
-            type: BottomNavigationBarType.fixed,
-            currentIndex: currentPage,
-            selectedItemColor: Colors.yellow,
-            unselectedItemColor: Colors.white,
-            onTap: (index) {
-              setState(() {
-                currentPage = index;
-              });
-            },
-            items: const [
-              BottomNavigationBarItem(
-                icon: Icon(CupertinoIcons.home),
-                label: 'Home',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(CupertinoIcons.cart),
-                label: 'Cart',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.restaurant),
-                label: 'OrderHistory',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(CupertinoIcons.profile_circled),
-                label: 'Profile',
-              ),
-            ],
+          BottomNavigationBarItem(
+            icon: Icon(CupertinoIcons.cart),
+            label: 'Cart',
           ),
-        ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.restaurant),
+            label: 'Orders',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(CupertinoIcons.profile_circled),
+            label: 'Profile',
+          ),
+        ],
       ),
     );
   }

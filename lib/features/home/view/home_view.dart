@@ -1,3 +1,6 @@
+
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -36,6 +39,7 @@ class _HomeViewState extends State<HomeView> {
   Future<void> getProfileData() async {
     try {
       final user = await authRepo.getProfileData();
+
       if (!mounted) return;
       setState(() {
         userModel = user;
@@ -53,6 +57,10 @@ class _HomeViewState extends State<HomeView> {
 
   Future<void> getProducts() async {
     final res = await productRepo.getProducts();
+
+    if (!mounted) return;
+    log('All products count: ${res.length}');
+
     setState(() {
       products = res;
       allProducts=res;
@@ -61,9 +69,11 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   void initState() {
-    getProducts();
-    getProfileData();
+
+
     super.initState();
+    getProducts();
+  //  getProfileData();
   }
 
   @override
@@ -163,10 +173,9 @@ class _HomeViewState extends State<HomeView> {
                         child: CardItem(
                           name: product.name,
                           image: product.image,
-                          desc: product.desc,
-                          rate: product.rate,
-                        ),
-                      );
+                          desc: product.description,
+                          rate: product.rate ?? '0.00',
+                        ));
                     },
                   ),
                 ),

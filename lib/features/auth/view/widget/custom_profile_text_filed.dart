@@ -13,6 +13,7 @@ class CustomProfileTextFiled extends StatelessWidget {
       keyboardType: textInputType,
       cursorColor: ColorPalette.primaryColor,
       decoration: InputDecoration(
+        contentPadding: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
         labelText: label,
         labelStyle: TextStyle(
           fontWeight: FontWeight.bold,

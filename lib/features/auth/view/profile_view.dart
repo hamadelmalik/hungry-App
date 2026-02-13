@@ -29,7 +29,7 @@ class _ProfileViewState extends State<ProfileView> {
   final TextEditingController _email = TextEditingController();
   final TextEditingController _address = TextEditingController();
   final TextEditingController _visa = TextEditingController();
-  bool isLoading = false;
+  bool isUpdateLoading = false;
   bool isLogoutLoading = false;
   int currentIndex = 0;
   String? selectImage;
@@ -45,6 +45,7 @@ class _ProfileViewState extends State<ProfileView> {
       if (!mounted) return;
       setState(() {
         userModel = user;
+        log('API Response: $user');
       });
     } catch (e) {
       String errorMsg = 'Profile Error';
@@ -52,7 +53,7 @@ class _ProfileViewState extends State<ProfileView> {
       if (e is ApiError) {
         errorMsg = e.message.toString();
       }
-
+log(errorMsg.toString());
       ScaffoldMessenger.of(context).showSnackBar(customSnack(errorMsg));
     }
   }
@@ -74,7 +75,7 @@ class _ProfileViewState extends State<ProfileView> {
   Future<void> updateProfileData() async {
     try {
       log('updateProfileData in process');
-      setState(() => isLoading = true);
+      setState(() => isUpdateLoading = true);
       final user = await authRepo.updateProfileData(
         name: _name.text.trim(),
         email: _email.text.trim(),
@@ -83,7 +84,7 @@ class _ProfileViewState extends State<ProfileView> {
         imagePath: selectImage,
       );
       setState(() => getProfileData());
-      setState(() => isLoading = false);
+      setState(() => isUpdateLoading = false);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         customSnack(
@@ -95,18 +96,18 @@ class _ProfileViewState extends State<ProfileView> {
       );
 
       setState(() => userModel = user);
+      log('API Response: $user');
       await getProfileData();
     } catch (e) {
-      setState(() => isLoading = false);
+      setState(() => isUpdateLoading = false);
       log("New image path: ${userModel!.image}");
       log("New visa: ${userModel!.visa}");
-      String errorMsg = 'update profile';
+     log('❌❌❌${e.toString()}');
 
-      if (e is ApiError) {
-        errorMsg = e.message.toString();
-      }
+
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(customSnack(errorMsg));
+      ScaffoldMessenger.of(context).showSnackBar(customSnack(e.toString()));
+
     }
   }
 
@@ -166,14 +167,14 @@ class _ProfileViewState extends State<ProfileView> {
           log('🔐🔐🔐image FROM API => ${userModel?.image}');
 
           // تحديث TextEditingControllers
-          _name.text = userModel?.name.toString() ?? 'hamad';
-          _email.text = userModel?.email.toString() ?? 'Hamad4alll@gmail.com';
+          _name.text = userModel?.name ?? 'hamad';
+          _email.text = userModel?.email ?? 'Hamad4alll@gmail.com';
           _address.text =
               (userModel?.address == null ||
                   userModel?.address?.toLowerCase() == 'null')
               ? 'Sudan'
               : userModel!.address!;
-          _visa.text = userModel?.visa.toString() ?? '';
+          _visa.text = userModel?.visa ?? '';
 
           // تحديث الواجهة بعد تغيير البيانات
 
@@ -292,12 +293,10 @@ class _ProfileViewState extends State<ProfileView> {
                       controller: _address,
                       label: 'Address',
                     ),
-                    Gap(10),
-                    Divider(color: ColorPalette.primaryColor),
-                    Gap(10),
+                     Gap(10),
 
                     //---visa--------------
-                    userModel?.visa == null
+                    userModel?.visa != null
                         ? CustomProfileTextFiled(
                             controller: _visa,
                             label: 'visa',
@@ -333,7 +332,7 @@ class _ProfileViewState extends State<ProfileView> {
                                 return '*****1235';
                               })(),
                               color: Colors.white,
-                              fontSize: 18,
+                              fontSize: 16,
                             ),
 
                             trailing: CustomText(
@@ -363,7 +362,7 @@ class _ProfileViewState extends State<ProfileView> {
               children: [
                 Expanded(
                   child: InkWell(
-                    onTap: isLoading ? null : updateProfileData,
+                    onTap: isUpdateLoading ? null : updateProfileData,
                     child: Container(
                       padding: EdgeInsets.all(10),
                       height: 60,
@@ -376,7 +375,7 @@ class _ProfileViewState extends State<ProfileView> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Center(
-                        child: isLoading
+                        child: isUpdateLoading
                             ? CupertinoActivityIndicator()
                             : Row(
                                 mainAxisAlignment: MainAxisAlignment.center,

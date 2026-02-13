@@ -9,6 +9,7 @@ import 'package:hungry/core/constants/color_palette.dart';
 import 'package:hungry/core/network/api_error.dart';
 import 'package:hungry/core/route/route_view.dart';
 import 'package:hungry/features/auth/data/auth_repo.dart';
+import 'package:hungry/features/auth/view/register_view.dart';
 import 'package:hungry/features/auth/view/widget/custom_bottom.dart';
 import 'package:hungry/shared/custom_btn.dart';
 import 'package:hungry/shared/custom_snak.dart';
@@ -31,8 +32,8 @@ class _LoginViewState extends State<LoginView> {
   @override
   void initState() {
 
-    emailController.text='hamad_new@gmail.com';
-    passwordController.text='12345678';
+    emailController.text='balla@gmail.com';
+    passwordController.text='11111111';
 
     super.initState();
   }
@@ -46,8 +47,11 @@ class _LoginViewState extends State<LoginView> {
         emailController.text.trim(),
         passwordController.text.trim(),
       );
-
-      if (user != null) Navigator.push(context, MaterialPageRoute(builder: (_) =>  PageRouteView()));
+     if(!mounted)return;
+      if (user != null) {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (_) => PageRouteView()));
+      }
       setState(() => isLoading = false);
     } catch (e) {
       setState(() => isLoading = false);
@@ -124,15 +128,17 @@ class _LoginViewState extends State<LoginView> {
                             child: CustomText(
                               text: 'Don have Account',
                               color: Colors.white,
-                              fontSize: 16,
+                              fontSize: 14,
                             ),
                           ),
                           GestureDetector(
-                            onTap: login,
+                            onTap: (){
+                              Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => RegisterView(),) );
+                            },
                             child: CustomText(
                               text: ' Create Account',
                               color: Colors.orangeAccent,
-                              fontSize: 16,
+                              fontSize: 14,
                               fontWeight: FontWeight.bold,
                             ),
                           ),

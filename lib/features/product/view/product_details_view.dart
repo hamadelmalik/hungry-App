@@ -49,9 +49,7 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
       throw ApiError(message: e.toString());
     }
   }
-
   //-----options-----
-
   Future<void> getOption() async {
     final res = await productRepo.getOption();
     setState(() {
@@ -59,9 +57,7 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
       // selectedOptions = [];
     });
   }
-
   //----------cart----------------
-
   CartRepo cartRepo = CartRepo();
 
   @override
@@ -233,7 +229,7 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
                     ),
                     CustomText(
                       text: "\$${widget.productPrice}",
-                      fontSize: 20,
+                      fontSize: 18,
                       color: Colors.white,
                       fontWeight: FontWeight.w700,
                     ),
@@ -253,7 +249,6 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
                     setState(() => isLoading = true);
 
                     try {
-                      // المنتج اللي المستخدم اختاره
                       final cartItem = CartModel(
                         productId: widget.productId,
                         quantity: 1,
@@ -262,56 +257,24 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
                         options: selectedOptions,
                       );
 
-                      // جلب بيانات الكارت الحالية
-                      final cartData = await cartRepo.getCartData();
-                      final existingItems = cartData.cartData.items;
-
-                      final messenger = ScaffoldMessenger.of(context);
-                      // فحص إذا المنتج موجود مسبقاً
-                      final index = existingItems.indexWhere(
-                        (item) => item.productId == cartItem.productId,
+                      await cartRepo.addToCart(
+                        CartRequestModel(items: [cartItem]),
                       );
 
-                      if (index != -1) {
-                        log('❌❌❌ ExistingItems ');
-                        // المنتج موجود بالفعل
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Add to cart successfully')),
+                      );
 
-                        messenger.showSnackBar(
-                          SnackBar(
-                            content: Text('هذا المنتج موجود بالفعل في الكارت'),
-                          ),
-                        );
-                      } else {
-                        await cartRepo.addToCart(
-                          CartRequestModel(items: [cartItem]),
-                        );
-
-                        messenger.showSnackBar(
-                          SnackBar(content: Text('تم إضافة المنتج للكارت')),
-                        );
-                        await cartRepo.addToCart(
-                          CartRequestModel(items: [cartItem]),
-                        );
-
-                        // 🔥 جيب الكارت من جديد
-                        final updatedCart = await cartRepo.getCartData();
-
-                        final totalCount = updatedCart.cartData.items.fold<int>(
-                          0,
-                          (sum, item) => sum + item.quantity,
-                        );
-
-                        log('Total items count is ${totalCount.toString()}');
-                      }
                     } catch (e) {
                       log('❌ Add to cart error: $e');
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('حدث خطأ أثناء إضافة المنتج')),
+                        SnackBar(content: Text('Error in add to cart')),
                       );
                     } finally {
                       setState(() => isLoading = false);
                     }
                   },
+
                 ),
               ],
             ),

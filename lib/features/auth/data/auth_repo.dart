@@ -14,50 +14,50 @@ class AuthRepo {
 
   final ApiServices apiServices = ApiServices();
 
-  //--------singIn---------------------------
+  //-------- /// Login---------------------------
   Future<UserModel?> login(String email, String password) async {
     try {
       final response = await apiServices.post('/login', {
         'email': email,
         'password': password,
       });
-
-      if (response is! Map<String, dynamic>) {
-        throw ApiError(message: 'serve errorر');
+      if (response is ApiError) {
+        throw response;
       }
 
-      final msg = response['message'];
-      final code = int.tryParse(response['code'].toString()) ?? 0;
-      final data = response['data'];
+      if (response is Map<String, dynamic>) {
+        final msg = response['message'];
+        final code = response['code'];
+        final data = response['data'];
 
-      log('📡 Login response - code: $code, data: $data');
+        log('📡 Login response - code: $code, data: $data');
 
-      if (code != 200 && code != 201) {
-        throw ApiError(message: msg ?? 'خطأ في تسجيل الدخول');
-      }
+        if (code != 200 && code != 201) {
+          throw ApiError(message: msg ?? 'Unknown error');
+        }
 
-      if (data == null || data is! Map<String, dynamic>) {
-        throw ApiError(message: 'بيانات المستخدم غير مكتملة');
-      }
+        final user = UserModel.fromJson(data);
+        log('🔐 Login successful - User token: ${user.token ?? 'null'}');
 
-      final user = UserModel.fromJson(data);
+        if (user.token != null) {
+          await PrefHelper.saveToken(user.token!);
+          log('💾 Token saved to storage: ${user.token}');
+        } else {
+          log('⚠️ No token received from server!');
+        }
 
-      if (user.token != null && user.token!.isNotEmpty) {
-        await PrefHelper.saveToken(user.token!);
-        log('💾 Token saved');
+        isGuest = false;
+        _currentUser = user;
+        return user;
       } else {
-        log('⚠️ Token غير موجود في الاستجابة');
+        throw ApiError(message: 'UnExpected Error From Server');
       }
-      isGuest = false;
-      _currentUser = user;
-      return user;
     } on DioException catch (e) {
       throw ApiExpectations.handleError(e);
     } catch (e) {
       throw ApiError(message: e.toString());
     }
   }
-
   //--------singUp---------------------------
 
   Future<UserModel?> signup(String name, String email, String password) async {
@@ -92,12 +92,13 @@ class AuthRepo {
       } else {
         throw ApiError(message: 'UnExpected Error From Server');
       }
-    } on DioException catch (e) {
+    } on DioError catch (e) {
       throw ApiExpectations.handleError(e);
     } catch (e) {
       throw ApiError(message: e.toString());
     }
   }
+
 
   //------------getaProfileDate-----------//
 
@@ -121,8 +122,7 @@ class AuthRepo {
   //-----------updateProfileDate-----------//
 
   /// update profile data
-  Future<UserModel?> updateProfileData({
-    required String name,
+  Future<UserModel?> updateProfileData({required String name,
     required String email,
     required String address,
     String? visa,
