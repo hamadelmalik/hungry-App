@@ -4,9 +4,7 @@ class CartModel {
   final int quantity;
   final double spicy;
   final List<int> toppings;
-
   final List<int> options;
-
   CartModel({
     required this.productId,
     required this.quantity,

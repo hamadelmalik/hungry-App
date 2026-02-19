@@ -1,32 +1,31 @@
-
-import 'dart:developer';
-
 class UserModel {
+  final int id;
   final String name;
   final String email;
-  final String? image;
-  final String? token;
-  final String? visa;
-  final String? address;
+  final String address;
+  final String visa;
+  final String image;
+  final String? token; // ✅ أضفنا التوكن هنا
 
   UserModel({
+    required this.id,
     required this.name,
     required this.email,
-    this.image,
+    required this.address,
+    required this.visa,
+    required this.image,
     this.token,
-    this.address,
-    this.visa,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
-    log('🔍 Parsing user data - token field: ${json['token']}');
     return UserModel(
-      name: json['name'].toString(),
-      email: json['email'].toString(),
-      image: json['image'].toString(),
-      token: json['token'],
-      address: json['address'].toString(),
-      visa: json['Visa']?.toString(),
+      id: json['id'] ?? 0,
+      name: json['name'] ?? '',
+      email: json['email'] ?? '',
+      address: json['address'] ?? '',
+      visa: json['visa'] ?? '',
+      image: json['image'] ?? '',
+      token: json['access_token'] ?? json['token'], // ✅ هنا نقرأ التوكن
     );
   }
 }

@@ -36,7 +36,6 @@ class CardItem extends StatelessWidget {
             Center(
               child: Image.network(
                 fullImageUrl,
-
                 width: 100,
                 height: 100,
                 fit: BoxFit.cover,
@@ -49,7 +48,8 @@ class CardItem extends StatelessWidget {
 
             Row(
               children: [
-                CustomText(text: rate),
+                Expanded(
+                    child: CustomText(text: rate)),
               Spacer(),
                 Icon(
                   CupertinoIcons.heart_fill,

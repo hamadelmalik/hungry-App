@@ -16,10 +16,8 @@ import 'package:hungry/features/auth/data/user_model.dart';
 import 'package:hungry/features/auth/view/widget/custom_profile_text_filed.dart';
 import 'package:hungry/shared/custom_snak.dart';
 import 'package:hungry/shared/custom_text.dart';
-
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
-
   @override
   State<ProfileView> createState() => _ProfileViewState();
 }
@@ -29,7 +27,8 @@ class _ProfileViewState extends State<ProfileView> {
   final TextEditingController _email = TextEditingController();
   final TextEditingController _address = TextEditingController();
   final TextEditingController _visa = TextEditingController();
-  bool isUpdateLoading = false;
+  bool isLoading = false;
+  bool isLoadingUpdate = false;
   bool isLogoutLoading = false;
   int currentIndex = 0;
   String? selectImage;
@@ -45,7 +44,6 @@ class _ProfileViewState extends State<ProfileView> {
       if (!mounted) return;
       setState(() {
         userModel = user;
-        log('API Response: $user');
       });
     } catch (e) {
       String errorMsg = 'Profile Error';
@@ -53,7 +51,7 @@ class _ProfileViewState extends State<ProfileView> {
       if (e is ApiError) {
         errorMsg = e.message.toString();
       }
-log(errorMsg.toString());
+
       ScaffoldMessenger.of(context).showSnackBar(customSnack(errorMsg));
     }
   }
@@ -75,42 +73,45 @@ log(errorMsg.toString());
   Future<void> updateProfileData() async {
     try {
       log('updateProfileData in process');
-      setState(() => isUpdateLoading = true);
-      final user = await authRepo.updateProfileData(
+      setState(() => isLoadingUpdate = true);
+
+      // 1. Update profile
+      await authRepo.updateProfileData(
         name: _name.text.trim(),
         email: _email.text.trim(),
         address: _address.text.trim(),
         visa: _visa.text.trim(),
         imagePath: selectImage,
       );
-      setState(() => getProfileData());
-      setState(() => isUpdateLoading = false);
+
+      // 2. Fetch updated profile (void)
+      await getProfileData();
+
       if (!mounted) return;
+      setState(() {
+        selectImage = null;
+        isLoadingUpdate = false;
+      });
+
+      // 3. Success message
       ScaffoldMessenger.of(context).showSnackBar(
         customSnack(
           'Update Profile Successfully',
           color: Colors.green,
-          iconData:
-              CupertinoIcons.check_mark_circled_solid, // اللون أخضر للنجاح
+          iconData: CupertinoIcons.check_mark_circled_solid,
         ),
       );
 
-      setState(() => userModel = user);
-      log('API Response: $user');
-      await getProfileData();
     } catch (e) {
-      setState(() => isUpdateLoading = false);
-      log("New image path: ${userModel!.image}");
-      log("New visa: ${userModel!.visa}");
-     log('❌❌❌${e.toString()}');
-
-
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(customSnack(e.toString()));
+      setState(() => isLoadingUpdate = false);
 
+      String errorMsg = 'Error update profile';
+      if (e is ApiError) errorMsg = e.message;
+
+      ScaffoldMessenger.of(context).showSnackBar(customSnack(errorMsg));
     }
   }
-
   //--------logout--------------//
   Future<void> logout() async {
     setState(() => isLogoutLoading = true);
@@ -158,32 +159,24 @@ log(errorMsg.toString());
     // تحميل بيانات المستخدم
     getProfileData()
         .then((v) {
-          // طباعة للتأكد إن البيانات اتجمعت
-          log('🔐 User data loaded successfully');
-          log('Name: ${userModel?.name}');
-          log('Email: ${userModel?.email}');
-          log('Address: ${userModel?.address}');
-          log('🔐🔐🔐VISA FROM API => ${userModel?.visa}');
-          log('🔐🔐🔐image FROM API => ${userModel?.image}');
 
-          // تحديث TextEditingControllers
-          _name.text = userModel?.name ?? 'hamad';
-          _email.text = userModel?.email ?? 'Hamad4alll@gmail.com';
-          _address.text =
-              (userModel?.address == null ||
-                  userModel?.address?.toLowerCase() == 'null')
-              ? 'Sudan'
-              : userModel!.address!;
-          _visa.text = userModel?.visa ?? '';
+      _name.text = userModel?.name.toString() ?? 'hamad';
+      _email.text = userModel?.email.toString() ?? 'Hamad4alll@gmail.com';
+      _address.text =
+      (userModel?.address == null ||
+          userModel?.address.toLowerCase() == 'null')
+          ? 'Sudan'
+          : userModel!.address;
+      _visa.text = userModel?.visa.toString() ?? '';
 
-          // تحديث الواجهة بعد تغيير البيانات
+      // تحديث الواجهة بعد تغيير البيانات
 
-          setState(() {});
-        })
+      setState(() {});
+    })
         .catchError((e) {
-          // التعامل مع أي خطأ في تحميل البيانات
-          log('⚠️ Error loading user data: $e');
-        });
+      // التعامل مع أي خطأ في تحميل البيانات
+      log('⚠️ Error loading user data: $e');
+    });
   }
 
   @override
@@ -216,7 +209,7 @@ log(errorMsg.toString());
                         GestureDetector(
                           onTap: () => Navigator.popUntil(
                             context,
-                            (route) => route.isFirst,
+                                (route) => route.isFirst,
                           ),
                           child: Icon(
                             Icons.arrow_back,
@@ -234,29 +227,44 @@ log(errorMsg.toString());
                     ),
                     Center(
                       child: Container(
-                        height: 100,
-                        width: 100,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          border: Border.all(
-                            width: 1,
-                            color: ColorPalette.primaryColor,
-                          ),
-                          color: Colors.grey.shade100,
+                          border: Border.all(width: 1, color: Colors.black),
+                          color: Colors.grey.shade300,
                         ),
-                        clipBehavior: Clip.antiAlias,
-                        child: selectImage != null
-                            ? Image.file(File(selectImage!), fit: BoxFit.cover)
-                            : (userModel?.image != null &&
-                                  userModel!.image!.isNotEmpty)
-                            ? Image.network(
-                                userModel!.image!,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, err, stackTrace) =>
-                                    Icon(Icons.person),
+                        child: Padding(
+                          padding: const EdgeInsets.all(1),
+                          child: Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white,
+                              ),
+                              padding: const EdgeInsets.all(3),
+                              child:CircleAvatar(
+                                radius: 30,
+                                backgroundColor: Colors.grey.shade200,
+                                child:   selectImage != null
+                                    ? Image.file(
+                                  File(selectImage!),
+                                  fit: BoxFit.cover,
+                                )
+                                    : (userModel?.image != null &&
+                                    userModel!.image.isNotEmpty)
+                                    ? ClipOval(
+                                  child: Image.network(
+                                    userModel!.image,
+                                    width: 60,
+                                    height: 60,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      // لو حصل أي خطأ في التحميل
+                                      return const Icon(Icons.person, size: 40);
+                                    },
+                                  ),
+                                )
+                                    : const Icon(Icons.person, size: 40),
                               )
-                            : Icon(Icons.person),
-                      ),
+                          ),),),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -293,55 +301,57 @@ log(errorMsg.toString());
                       controller: _address,
                       label: 'Address',
                     ),
-                     Gap(10),
+                    Gap(10),
+                    Divider(color: ColorPalette.primaryColor),
+                    Gap(10),
 
                     //---visa--------------
                     userModel?.visa != null
                         ? CustomProfileTextFiled(
-                            controller: _visa,
-                            label: 'visa',
-                            textInputType: TextInputType.number,
-                          )
+                      controller: _visa,
+                      label: 'visa',
+                      textInputType: TextInputType.number,
+                    )
                         : ListTile(
-                            onTap: () {},
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            contentPadding: EdgeInsets.symmetric(
-                              vertical: 8,
-                              horizontal: 16,
-                            ),
+                      onTap: () {},
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      contentPadding: EdgeInsets.symmetric(
+                        vertical: 8,
+                        horizontal: 16,
+                      ),
 
-                            tileColor: Colors.blue.shade900,
-                            leading: Image.asset(AssetsPath.Asset, width: 50),
-                            title: const CustomText(
-                              text: 'Debit card',
-                              color: Colors.white,
-                              fontSize: 18,
-                            ),
-                            subtitle: CustomText(
-                              text: (() {
-                                final visa = userModel?.visa;
+                      tileColor: Colors.blue.shade900,
+                      leading: Image.asset(AssetsPath.Asset, width: 50),
+                      title: const CustomText(
+                        text: 'Debit card',
+                        color: Colors.white,
+                        fontSize: 18,
+                      ),
+                      subtitle: CustomText(
+                        text: (() {
+                          final visa = userModel?.visa;
 
-                                if (visa != null &&
-                                    visa.trim().isNotEmpty &&
-                                    visa.toLowerCase() != 'null') {
-                                  return visa; // عرض الرقم كامل
-                                }
+                          if (visa != null &&
+                              visa.trim().isNotEmpty &&
+                              visa.toLowerCase() != 'null') {
+                            return visa; // عرض الرقم كامل
+                          }
 
-                                return '*****1235';
-                              })(),
-                              color: Colors.white,
-                              fontSize: 16,
-                            ),
+                          return '*****1235';
+                        })(),
+                        color: Colors.white,
+                        fontSize: 18,
+                      ),
 
-                            trailing: CustomText(
-                              text: 'Default',
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
+                      trailing: CustomText(
+                        text: 'Default',
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
                     Gap(20),
                   ],
                 ),
@@ -362,7 +372,7 @@ log(errorMsg.toString());
               children: [
                 Expanded(
                   child: InkWell(
-                    onTap: isUpdateLoading ? null : updateProfileData,
+                    onTap: isLoadingUpdate ? null : updateProfileData,
                     child: Container(
                       padding: EdgeInsets.all(10),
                       height: 60,
@@ -375,23 +385,23 @@ log(errorMsg.toString());
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Center(
-                        child: isUpdateLoading
-                            ? CupertinoActivityIndicator()
+                        child: isLoadingUpdate
+                            ? CupertinoActivityIndicator(color: Colors.white,)
                             : Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  CustomText(
-                                    text: 'Edit Profile',
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  Icon(
-                                    Icons.edit_document,
-                                    color: ColorPalette.primaryColor,
-                                  ),
-                                ],
-                              ),
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            CustomText(
+                              text: 'Edit Profile',
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            Icon(
+                              Icons.edit_document,
+                              color: ColorPalette.primaryColor,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -416,18 +426,18 @@ log(errorMsg.toString());
                         child: isLogoutLoading
                             ? CupertinoActivityIndicator(color: Colors.white)
                             : Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  CustomText(
-                                    text: 'Logout',
-                                    fontSize: 18,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  Icon(Icons.logout, color: Colors.white),
-                                ],
-                              ),
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            CustomText(
+                              text: 'Logout',
+                              fontSize: 18,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            Icon(Icons.logout, color: Colors.white),
+                          ],
+                        ),
                       ),
                     ),                 ),
                 ),

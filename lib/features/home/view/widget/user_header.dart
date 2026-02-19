@@ -13,6 +13,7 @@ class UserHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return Row(
       children: [
         Column(
@@ -28,7 +29,7 @@ class UserHeader extends StatelessWidget {
                 ),
                 CustomText(
                   text: userName,
-                  fontSize: 22,
+                  fontSize: 18,
                   fontWeight: FontWeight.w200,
                   color: ColorPalette.primaryColor,
                 ),

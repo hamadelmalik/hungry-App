@@ -33,7 +33,7 @@ class _LoginViewState extends State<LoginView> {
   void initState() {
 
     emailController.text='balla@gmail.com';
-    passwordController.text='11111111';
+    passwordController.text='12345678';
 
     super.initState();
   }

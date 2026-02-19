@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hungry/features/home/view/home_view.dart';
-import 'package:hungry/splash_screen.dart';
+import 'package:hungry/features/auth/view/login_view.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,7 +16,7 @@ class MyApp extends StatelessWidget {
       title: 'hungerApp',
       theme: ThemeData(scaffoldBackgroundColor: Colors.white),
 
-      home: HomeView(),
+      home: LoginView(),
     );
   }
 }

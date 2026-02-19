@@ -41,6 +41,7 @@ class _HomeViewState extends State<HomeView> {
       final user = await authRepo.getProfileData();
 
       if (!mounted) return;
+
       setState(() {
         userModel = user;
       });
@@ -69,11 +70,9 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   void initState() {
-
-
-    super.initState();
     getProducts();
-  //  getProfileData();
+  getProfileData();
+    super.initState();
   }
 
   @override
@@ -109,7 +108,7 @@ class _HomeViewState extends State<HomeView> {
                       children: [
                         UserHeader(
                           userName: userModel?.name ?? 'Guest',
-                          userImage: userModel?.image?? 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStvL8kNVKvJskGpi8do02RNw2bn3sKxTTJ2g&s',
+                          userImage: userModel?.image ?? '',
                         ),
                         Gap(20),
                         SearchWidget(controller: controller,onChanged: (value){
@@ -186,4 +185,5 @@ class _HomeViewState extends State<HomeView> {
       ),
     );
   }
+
 }
