@@ -60,7 +60,7 @@ class _CartViewState extends State<CartView> {
     });
   }
 
-  
+
 
   GetCartResponseModel? cartResponse;
   CartRepo cartRepo = CartRepo();
@@ -70,7 +70,7 @@ class _CartViewState extends State<CartView> {
 
       setState(() => isLoading = true);
       final res = await cartRepo.getCartData();
-      log('getdaaaaaaaaaaaaaaaaaaaaacart');
+      log('getCart');
        final itemCount = res.cartData.items.length ;
       setState(() {
         cartResponse = res;
@@ -83,7 +83,7 @@ class _CartViewState extends State<CartView> {
       setState(() => isLoading = false);
     }
   }
-  
+
   Future<void>removeCartItem(int id)async{
     try{
      // setState(() => isLoadingRemove=true)

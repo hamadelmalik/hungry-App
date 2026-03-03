@@ -22,12 +22,12 @@ class ProductRepo {
   }
 
   //-------------getTopping-----------//
-  Future<List<ToppingModel>> getTopping() async {
+  Future<List<OptionModel>> getTopping() async {
     try {
       final response = await apiServices.get('/toppings');
 
       return (response['data'] as List? ?? []).map((topping) {
-        return ToppingModel.fromJson(topping);
+        return OptionModel.fromJson(topping);
       }).toList();
     } catch (e) {
       log(e.toString());
@@ -35,13 +35,13 @@ class ProductRepo {
     }
   }
 
-//-------------getOPTION-----------
-  Future<List<ToppingModel>> getOption() async {
+//-------------getOption-----------
+  Future<List<OptionModel>> getOption() async {
     try {
       final response = await apiServices.get('/side-options');
 
       return (response['data'] as List? ?? []).map((side) {
-        return ToppingModel.fromJson(side);
+        return OptionModel.fromJson(side);
       }).toList();
     } catch (e) {
       log(e.toString());

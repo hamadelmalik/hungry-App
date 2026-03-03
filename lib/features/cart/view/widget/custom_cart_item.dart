@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:hungry/core/constants/assets_app.dart';
 import 'package:hungry/core/constants/color_palette.dart';
 import 'package:hungry/shared/custom_btn.dart';
 import 'package:hungry/shared/custom_text.dart';
@@ -83,7 +82,7 @@ class CustomCartItemNew extends StatelessWidget {
                   height: 90,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stack) {
-                    print("IMAGE ERROR => $error");
+                    //print("IMAGE ERROR => $error");
                     return Icon(Icons.error, size: 30);
                   },
                 ),

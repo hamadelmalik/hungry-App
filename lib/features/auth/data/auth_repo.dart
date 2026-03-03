@@ -35,11 +35,11 @@ class AuthRepo {
         throw ApiError(message: 'Token or user data missing');
       }
 
-      // ✅ خزّن التوكن
+      // ✅ token
       await PrefHelper.saveToken(token);
       log('💾 Token saved to storage: $token');
 
-      // ✅ أنشئ المستخدم
+      // ✅ create user
       final user = UserModel.fromJson(userJson);
 
       isGuest = false;
@@ -75,7 +75,7 @@ class AuthRepo {
           throw ApiError(message: msg ?? 'Unknown error');
         }
 
-        /// condtion assement
+        //----if user has a token-----------------
         final user = UserModel.fromJson(data);
         if (user.token != null) {
           await PrefHelper.saveToken(user.token!);
@@ -124,7 +124,7 @@ class AuthRepo {
       return null;
     }
   }
-  //-----------updateProfileDate-----------//
+
 
 
   //-----------logout-----------//
@@ -179,6 +179,9 @@ class AuthRepo {
       return null;
     }
   }
+
+  /// update profile data
+  /// update profile data
   Future<UserModel?> updateProfileData({
     required String name,
     required String email,
@@ -187,45 +190,57 @@ class AuthRepo {
     String? imagePath,
   }) async {
     try {
+      print("🔥 UPDATE PROFILE START");
+
       final formData = FormData.fromMap({
         'name': name,
         'email': email,
         'address': address,
-        if (visa != null && visa.isNotEmpty) 'Visa': visa,
+        if (visa != null && visa.isNotEmpty) 'visa': visa, // ✅ صح
         if (imagePath != null && imagePath.isNotEmpty)
           'image': await MultipartFile.fromFile(
             imagePath,
             filename: 'profile.jpg',
           ),
       });
+
       final response = await apiServices.post('/update-profile', formData);
+      print("✅ RESPONSE: $response");
+
       if (response is ApiError) {
         throw response;
       }
 
-      if (response is Map<String, dynamic>) {
-        final code = parseResponseCode(response) ?? 0;
-        final msg = response['message'];
-        final data = response['data'];
-
-
-        if (code != 200 && code != 201) {
-          throw ApiError(message: msg ?? 'Unknown error');
-        }
-
-        final updatedUser = UserModel.fromJson(data);
-        _currentUser = updatedUser;
-        return updatedUser;
-      } else {
-        throw ApiError(message: 'Invalid  Error from here');
+      if (response is! Map<String, dynamic>) {
+        throw ApiError(message: 'Invalid response format');
       }
+
+      final code = parseResponseCode(response) ?? 0;
+      final msg = response['message'];
+      final data = response['data'];
+
+      if (code != 200 && code != 201) {
+        throw ApiError(message: msg ?? 'Unknown error');
+      }
+
+      // ✅ حماية من الخطأ القاتل
+      if (data is! Map<String, dynamic>) {
+        log("❌❌❌ DATA TYPE: ${data.runtimeType}");
+        log("❌❌❌ DATA VALUE: $data");
+        throw ApiError(message: 'Invalid user data format');
+      }
+
+      final updatedUser = UserModel.fromJson(data);
+      _currentUser = updatedUser;
+
+      log("🎉 PROFILE UPDATED SUCCESS");
+      return updatedUser;
     } on DioException catch (e) {
       throw ApiExpectations.handleError(e);
     } catch (e) {
       throw ApiError(message: e.toString());
     }
   }
-
   UserModel? get currentUser  => _currentUser;
 
   bool get isLoggedIn => !isGuest && _currentUser != null;

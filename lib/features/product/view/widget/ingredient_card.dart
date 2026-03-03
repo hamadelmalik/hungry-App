@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:hungry/core/constants/color_palette.dart';
 import 'package:hungry/shared/custom_text.dart';
 
-class ToppingsCard extends StatelessWidget {
+class ProductOptionCart extends StatelessWidget {
   final String image, title;
   final Color colorIcn, boxDecoration;
   final VoidCallback onAdd;
 
-  const ToppingsCard({
+  const ProductOptionCart({
     super.key,
     required this.image,
     required this.title,
@@ -43,7 +43,11 @@ class ToppingsCard extends StatelessWidget {
                 color: const Color(0xFFF9F9F9),
                 borderRadius: BorderRadius.circular(22),
               ),
-              child: Image.network(image, height: 70, fit: BoxFit.contain),
+              child: Image.network(
+                "http://192.168.1.19:8000/storage/$image",
+                height: 70,
+                fit: BoxFit.contain,
+              ),
             ),
 
             // الجزء السفلي

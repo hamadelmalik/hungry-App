@@ -16,8 +16,10 @@ import 'package:hungry/features/auth/data/user_model.dart';
 import 'package:hungry/features/auth/view/widget/custom_profile_text_filed.dart';
 import 'package:hungry/shared/custom_snak.dart';
 import 'package:hungry/shared/custom_text.dart';
+
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
+
   @override
   State<ProfileView> createState() => _ProfileViewState();
 }
@@ -49,6 +51,7 @@ class _ProfileViewState extends State<ProfileView> {
       String errorMsg = 'Profile Error';
 
       if (e is ApiError) {
+        log(errorMsg.toString());
         errorMsg = e.message.toString();
       }
 
@@ -101,17 +104,17 @@ class _ProfileViewState extends State<ProfileView> {
           iconData: CupertinoIcons.check_mark_circled_solid,
         ),
       );
-
     } catch (e) {
       if (!mounted) return;
       setState(() => isLoadingUpdate = false);
 
       String errorMsg = 'Error update profile';
       if (e is ApiError) errorMsg = e.message;
-
+      log(errorMsg.toString());
       ScaffoldMessenger.of(context).showSnackBar(customSnack(errorMsg));
     }
   }
+
   //--------logout--------------//
   Future<void> logout() async {
     setState(() => isLogoutLoading = true);
@@ -125,7 +128,6 @@ class _ProfileViewState extends State<ProfileView> {
         context,
         MaterialPageRoute(builder: (_) => LoginView()),
       );
-
     } catch (e, s) {
       log("❌ LOGOUT ERROR: $e");
       log("STACK TRACE: $s");
@@ -153,30 +155,28 @@ class _ProfileViewState extends State<ProfileView> {
 
   @override
   void initState() {
-
     super.initState();
     autoLogin();
     // تحميل بيانات المستخدم
     getProfileData()
         .then((v) {
+          _name.text = userModel?.name.toString() ?? 'hamad';
+          _email.text = userModel?.email.toString() ?? 'Hamad4alll@gmail.com';
+          _address.text =
+              (userModel?.address == null ||
+                  userModel?.address.toLowerCase() == 'null')
+              ? 'Sudan'
+              : userModel!.address;
+          _visa.text = userModel?.visa.toString() ?? '';
 
-      _name.text = userModel?.name.toString() ?? 'hamad';
-      _email.text = userModel?.email.toString() ?? 'Hamad4alll@gmail.com';
-      _address.text =
-      (userModel?.address == null ||
-          userModel?.address.toLowerCase() == 'null')
-          ? 'Sudan'
-          : userModel!.address;
-      _visa.text = userModel?.visa.toString() ?? '';
+          // تحديث الواجهة بعد تغيير البيانات
 
-      // تحديث الواجهة بعد تغيير البيانات
-
-      setState(() {});
-    })
+          setState(() {});
+        })
         .catchError((e) {
-      // التعامل مع أي خطأ في تحميل البيانات
-      log('⚠️ Error loading user data: $e');
-    });
+          // التعامل مع أي خطأ في تحميل البيانات
+          log('⚠️ Error loading user data: $e');
+        });
   }
 
   @override
@@ -209,7 +209,7 @@ class _ProfileViewState extends State<ProfileView> {
                         GestureDetector(
                           onTap: () => Navigator.popUntil(
                             context,
-                                (route) => route.isFirst,
+                            (route) => route.isFirst,
                           ),
                           child: Icon(
                             Icons.arrow_back,
@@ -235,36 +235,42 @@ class _ProfileViewState extends State<ProfileView> {
                         child: Padding(
                           padding: const EdgeInsets.all(1),
                           child: Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.white,
-                              ),
-                              padding: const EdgeInsets.all(3),
-                              child:CircleAvatar(
-                                radius: 30,
-                                backgroundColor: Colors.grey.shade200,
-                                child:   selectImage != null
-                                    ? Image.file(
-                                  File(selectImage!),
-                                  fit: BoxFit.cover,
-                                )
-                                    : (userModel?.image != null &&
-                                    userModel!.image.isNotEmpty)
-                                    ? ClipOval(
-                                  child: Image.network(
-                                    userModel!.image,
-                                    width: 60,
-                                    height: 60,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      // لو حصل أي خطأ في التحميل
-                                      return const Icon(Icons.person, size: 40);
-                                    },
-                                  ),
-                                )
-                                    : const Icon(Icons.person, size: 40),
-                              )
-                          ),),),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white,
+                            ),
+                            padding: const EdgeInsets.all(3),
+                            child: CircleAvatar(
+                              radius: 30,
+                              backgroundColor: Colors.grey.shade200,
+                              child: selectImage != null
+                                  ? Image.file(
+                                      File(selectImage!),
+                                      fit: BoxFit.cover,
+                                    )
+                                  : (userModel?.image != null &&
+                                        userModel!.image.isNotEmpty)
+                                  ? ClipOval(
+                                      child: Image.network(
+                                        userModel!.image,
+                                        width: 60,
+                                        height: 60,
+                                        fit: BoxFit.cover,
+                                        errorBuilder:
+                                            (context, error, stackTrace) {
+                                              // لو حصل أي خطأ في التحميل
+                                              return const Icon(
+                                                Icons.person,
+                                                size: 40,
+                                              );
+                                            },
+                                      ),
+                                    )
+                                  : const Icon(Icons.person, size: 40),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -308,50 +314,50 @@ class _ProfileViewState extends State<ProfileView> {
                     //---visa--------------
                     userModel?.visa != null
                         ? CustomProfileTextFiled(
-                      controller: _visa,
-                      label: 'visa',
-                      textInputType: TextInputType.number,
-                    )
+                            controller: _visa,
+                            label: 'visa',
+                            textInputType: TextInputType.number,
+                          )
                         : ListTile(
-                      onTap: () {},
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      contentPadding: EdgeInsets.symmetric(
-                        vertical: 8,
-                        horizontal: 16,
-                      ),
+                            onTap: () {},
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            contentPadding: EdgeInsets.symmetric(
+                              vertical: 8,
+                              horizontal: 16,
+                            ),
 
-                      tileColor: Colors.blue.shade900,
-                      leading: Image.asset(AssetsPath.Asset, width: 50),
-                      title: const CustomText(
-                        text: 'Debit card',
-                        color: Colors.white,
-                        fontSize: 18,
-                      ),
-                      subtitle: CustomText(
-                        text: (() {
-                          final visa = userModel?.visa;
+                            tileColor: Colors.blue.shade900,
+                            leading: Image.asset(AssetsPath.Asset, width: 50),
+                            title: const CustomText(
+                              text: 'Debit card',
+                              color: Colors.white,
+                              fontSize: 18,
+                            ),
+                            subtitle: CustomText(
+                              text: (() {
+                                final visa = userModel?.visa;
 
-                          if (visa != null &&
-                              visa.trim().isNotEmpty &&
-                              visa.toLowerCase() != 'null') {
-                            return visa; // عرض الرقم كامل
-                          }
+                                if (visa != null &&
+                                    visa.trim().isNotEmpty &&
+                                    visa.toLowerCase() != 'null') {
+                                  return visa; // عرض الرقم كامل
+                                }
 
-                          return '*****1235';
-                        })(),
-                        color: Colors.white,
-                        fontSize: 18,
-                      ),
+                                return '*****1235';
+                              })(),
+                              color: Colors.white,
+                              fontSize: 18,
+                            ),
 
-                      trailing: CustomText(
-                        text: 'Default',
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
+                            trailing: CustomText(
+                              text: 'Default',
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
                     Gap(20),
                   ],
                 ),
@@ -386,22 +392,22 @@ class _ProfileViewState extends State<ProfileView> {
                       ),
                       child: Center(
                         child: isLoadingUpdate
-                            ? CupertinoActivityIndicator(color: Colors.white,)
+                            ? CupertinoActivityIndicator(color: Colors.white)
                             : Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            CustomText(
-                              text: 'Edit Profile',
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            Icon(
-                              Icons.edit_document,
-                              color: ColorPalette.primaryColor,
-                            ),
-                          ],
-                        ),
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  CustomText(
+                                    text: 'Edit Profile',
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  Icon(
+                                    Icons.edit_document,
+                                    color: ColorPalette.primaryColor,
+                                  ),
+                                ],
+                              ),
                       ),
                     ),
                   ),
@@ -426,20 +432,21 @@ class _ProfileViewState extends State<ProfileView> {
                         child: isLogoutLoading
                             ? CupertinoActivityIndicator(color: Colors.white)
                             : Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            CustomText(
-                              text: 'Logout',
-                              fontSize: 18,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            Icon(Icons.logout, color: Colors.white),
-                          ],
-                        ),
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  CustomText(
+                                    text: 'Logout',
+                                    fontSize: 18,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  Icon(Icons.logout, color: Colors.white),
+                                ],
+                              ),
                       ),
-                    ),                 ),
+                    ),
+                  ),
                 ),
               ],
             ),

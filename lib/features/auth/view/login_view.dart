@@ -32,7 +32,7 @@ class _LoginViewState extends State<LoginView> {
   @override
   void initState() {
 
-    emailController.text='balla@gmail.com';
+    emailController.text='hamad@gmail.com';
     passwordController.text='12345678';
 
     super.initState();
@@ -126,7 +126,7 @@ class _LoginViewState extends State<LoginView> {
                         children: [
                           Expanded(
                             child: CustomText(
-                              text: 'Don have Account',
+                              text: 'Don’t have an account?',
                               color: Colors.white,
                               fontSize: 14,
                             ),

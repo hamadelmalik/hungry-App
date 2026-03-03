@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -18,10 +17,8 @@ class CardItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String baseUrl = "http://192.168.1.19:8000/";
-    String fullImageUrl = image;
-    print(fullImageUrl);
-    log('📌 $fullImageUrl');
+
+
 
 
     return Card(
@@ -35,11 +32,10 @@ class CardItem extends StatelessWidget {
           children: [
             Center(
               child: Image.network(
-                fullImageUrl,
+                image,
                 width: 100,
                 height: 100,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Icon(Icons.error),
               )
 
             ),
