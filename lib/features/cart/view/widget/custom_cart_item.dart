@@ -72,7 +72,6 @@ class CustomCartItemNew extends StatelessWidget {
               const Gap(10),
             ],
 
-            // Row للصورة + أزرار الإضافة/النقصان والعدد
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

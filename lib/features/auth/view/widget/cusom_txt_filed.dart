@@ -23,16 +23,19 @@ class CustomUserTxtField extends StatelessWidget {
         contentPadding: EdgeInsets.symmetric(horizontal: 20),
         labelText: label,
         labelStyle: TextStyle(color: ColorPalette.primaryColor),
-        hintStyle: TextStyle(color: ColorPalette.primaryColor),
+        hintStyle: TextStyle(color: Colors.grey), // خليها لون مختلف
+        filled: true, // يخلي الخلفية واضحة
+        fillColor: Colors.white, // لون الخلفية
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(color: ColorPalette.primaryColor),
           borderRadius: BorderRadius.circular(25),
         ),
         focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: ColorPalette.primaryColor),
+          borderSide: BorderSide(color: ColorPalette.primaryColor, width: 2),
           borderRadius: BorderRadius.circular(15),
         ),
       ),
+
     );
   }
 }

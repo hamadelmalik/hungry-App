@@ -72,19 +72,17 @@ class _LoginViewState extends State<LoginView> {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-
+backgroundColor: ColorPalette.primaryColor,
         body: Form(
           key: formKey,
           child: Column(
             children: [
-              Gap(100),
-          SvgPicture.asset(
-            AssetsPath.hungryTex,
-            colorFilter: ColorFilter.mode(
-              ColorPalette.primaryColor,
-              BlendMode.srcIn,
-            ),),
+              Gap(20),
+              Image.asset(
+                'assets/images/lastlogo.png',width: 400,height: 200,
+                fit: BoxFit.contain,
 
+              ),
 
               Gap(40),
               Expanded(
@@ -95,7 +93,7 @@ class _LoginViewState extends State<LoginView> {
                       topRight: Radius.circular(30),
                         topLeft: Radius.circular(30),
                     ),
-                    color: ColorPalette.primaryColor
+                    color: Colors.white
                   ),
 
                   child: Column(
@@ -115,11 +113,12 @@ class _LoginViewState extends State<LoginView> {
                       //----------login------//
                       isLoading?CupertinoActivityIndicator(color: Colors.white,):
                       CustomAuthBottom(
-
+                        background: ColorPalette.primaryColor,
                         height: 60,
                         width: double.infinity,
                         onTap: login,
                         text: 'Login',fontSize: 20,
+                        textColor: Colors.white,
                       ),
                       Gap(20),
                       Row(
@@ -137,7 +136,7 @@ class _LoginViewState extends State<LoginView> {
                             },
                             child: CustomText(
                               text: ' Create Account',
-                              color: Colors.orangeAccent,
+                              color: ColorPalette.primaryColor,
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
                             ),
@@ -152,7 +151,7 @@ class _LoginViewState extends State<LoginView> {
                        return PageRouteView();
                      },));
                    },
-                   heightSize: 50, widthSize: 300, backgroundColor: Colors.orangeAccent,borderColor: Colors.transparent, child: CustomText(text: 'Continue As Guest',fontWeight: FontWeight.bold,color: ColorPalette.primaryColor,fontSize: 22,))
+                   heightSize: 50, widthSize: 300, backgroundColor: ColorPalette.darkMocha,borderColor: Colors.transparent, child: CustomText(text: 'Continue As Guest',fontWeight: FontWeight.bold,color: Colors.white,fontSize: 18,))
 
                     ],
                   ),

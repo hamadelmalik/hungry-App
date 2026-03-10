@@ -25,22 +25,30 @@ class CustomCartItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       color: Colors.white,
 
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Image.network(image, width: 80, height: 80),
-                CustomText(text: text, fontWeight: FontWeight.bold),
-              ],
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Image.network(
+                    'http://192.168.1.19:8000/storage/uploadimages/$image',
+                    width: 80,
+                    height: 80,
+                    fit: BoxFit.cover,
+                  ),
+                  CustomText(text: text, fontWeight: FontWeight.bold),
+                ],
+              ),
             ),
             Column(
               children: [
@@ -49,7 +57,7 @@ class CustomCartItem extends StatelessWidget {
                     GestureDetector(
                       onTap: onAdd,
                       child: CircleAvatar(
-                        radius: 20,
+                        radius: 18,
                         // نصف القطر
                         backgroundColor: ColorPalette.primaryColor,
                         // 👈 لون الخلفية
@@ -60,14 +68,14 @@ class CustomCartItem extends StatelessWidget {
                     CustomText(
                       text: number.toString(),
                       fontWeight: FontWeight.bold,
-                      fontSize: 25,
+                      fontSize: 20,
                     ),
                     Gap(10),
 
                     GestureDetector(
                       onTap: onMinus,
                       child: CircleAvatar(
-                        radius: 30,
+                        radius: 18,
                         // نصف القطر
                         backgroundColor: ColorPalette.primaryColor,
                         // 👈 لون الخلفية
@@ -76,7 +84,7 @@ class CustomCartItem extends StatelessWidget {
                     ),
                   ],
                 ),
-                Gap(30),
+                Gap(10),
                 CustomBtn(
                   heightSize: 44,
                   widthSize: 145,
@@ -85,7 +93,7 @@ class CustomCartItem extends StatelessWidget {
                   child: CustomText(
                     text: 'Remove',
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:developer';
 import 'package:hungry/core/network/api_error.dart';
 import 'package:hungry/core/network/api_services.dart';
@@ -9,8 +8,7 @@ class CartRepo {
 
   //=========addToCart-------------------
 
-  //=========addToCart-------------------
-  Future<void> addToCart(CartRequestModel cartData) async {
+   Future<void> addToCart(CartRequestModel cartData) async {
     try {
       final res = await apiServices.post('/cart/add', cartData.toJson());
 
@@ -37,7 +35,7 @@ class CartRepo {
     }
   }
 
-  ///------------ermove cart--------------
+  ///------------ remove cart--------------
   Future<void> removeCartItem(int id) async {
     try {
       final res = await apiServices.delete('/cart/remove/$id', {});

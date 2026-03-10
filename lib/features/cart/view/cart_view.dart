@@ -9,7 +9,7 @@ import 'package:hungry/features/auth/data/user_model.dart';
 import 'package:hungry/features/auth/view/widget/guest_mode.dart';
 import 'package:hungry/features/cart/data/model/cart_model.dart';
 import 'package:hungry/features/cart/data/repo/cart_repo.dart';
-import 'package:hungry/features/cart/view/widget/custom_cart_item.dart';
+import 'package:hungry/features/cart/view/widget/cart_item.dart';
 import 'package:hungry/features/checkout/view/checkout_view.dart';
 import 'package:hungry/shared/custom_btn.dart';
 import 'package:hungry/shared/custom_snak.dart';
@@ -135,7 +135,7 @@ if(!isGuest) {
               itemCount: cartResponse!.cartData.items.length,
               itemBuilder: (context, index) {
                 final item = cartResponse!.cartData.items[index];
-                return CustomCartItemNew(
+                return CustomCartItem(
                   image: item.image,
                   text: item.name,
                   desc: 'xxxx',
@@ -159,14 +159,14 @@ if(!isGuest) {
               },
             ),
           ),
-          SizedBox(height: 20),
 
+          SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
+          //  crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              CustomText(
 
+              CustomText(
                 text: cartResponse?.cartData.totalPrice ?? '90',
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -180,7 +180,7 @@ if(!isGuest) {
                     child: CustomBtn(
                       heightSize: 45,
                       widthSize: double.infinity,
-                      backgroundColor: Colors.blue,
+                      backgroundColor: ColorPalette.darkMocha,
                       onTap: () {
                         Navigator.push(
                           context,

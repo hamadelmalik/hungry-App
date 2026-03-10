@@ -126,7 +126,7 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
                         ),
                       ],
                     );
-                  }).toList(),
+                  }),
 
                 Gap(200),
               ],
@@ -136,15 +136,8 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
         bottomSheet: Container(
           height: 100,
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                ColorPalette.primaryColor.withOpacity(0.9),
-                ColorPalette.primaryColor.withOpacity(0.8),
-                ColorPalette.primaryColor.withOpacity(0.9),
-              ],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
+
+
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(20),
               topRight: Radius.circular(20),
@@ -190,8 +183,11 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
                         spicy: spicyValue,
                       );
                       await cartRepo.addToCart(CartRequestModel(items: [cartItem]));
+                      if (!context.mounted) return;
+
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('Add to cart successfully')),
+
                       );
                     } catch (e) {
                       log('❌ Add to cart error: $e');

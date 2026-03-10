@@ -17,26 +17,19 @@ class CardItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-
-
-
     return Card(
       color: ColorPalette.aje,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-
-
           children: [
             Center(
-              child: Image.network(
+              child:  Image.network(
                 image,
-                width: 100,
-                height: 100,
-                fit: BoxFit.cover,
-              )
+                width: 80,
+                height: 80,
+              ),
 
             ),
             Spacer(),

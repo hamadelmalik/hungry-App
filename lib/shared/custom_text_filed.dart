@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hungry/core/constants/color_palette.dart';
 
 class CustomTextFiled extends StatefulWidget {
   final String hint;
@@ -39,9 +40,9 @@ class _CustomTextFiledState extends State<CustomTextFiled> {
       cursorColor: Colors.white,
       obscureText: _obscureText,
       controller: widget.controller,
-    cursorErrorColor: Colors.white,
+    cursorErrorColor: Colors.black,
       style: const TextStyle(
-        color: Colors.white, // 👈 لون النص المكتوب
+        color: Colors.black, // 👈 لون النص المكتوب
         fontSize: 16,
       ),
 
@@ -66,22 +67,22 @@ class _CustomTextFiledState extends State<CustomTextFiled> {
 
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.white),
+          borderSide: BorderSide(color: ColorPalette.primaryColor),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.white),
+          borderSide: BorderSide(color: ColorPalette.primaryColor),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: Colors.red),
+          borderSide: const BorderSide(color: ColorPalette.primaryColor),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: Colors.red),
+          borderSide: const BorderSide(color: ColorPalette.primaryColor),
         ),
         hintText: widget.hint,
-        hintStyle: TextStyle(color: Colors.white),
+        hintStyle: TextStyle(color: Colors.black),
         filled: true,
         fillColor: Colors.transparent,
       ),
