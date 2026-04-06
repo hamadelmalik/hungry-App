@@ -36,7 +36,7 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
   ProductRepo productRepo = ProductRepo();
   CartRepo cartRepo = CartRepo();
   OptionRepo optionRepo = OptionRepo();
-
+  OptionModel? selectedOption;
   // ✅ Map لتخزين كل الخيارات حسب النوع
   Map<String, List<OptionModel>> optionsByType = {};
 
@@ -181,7 +181,8 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
                         productId: widget.productId,
                         quantity: 1,
                         spicy: spicyValue,
-                        optionsByType: optionsByType, // ✅ pass the Map
+                        optionTypeId: selectedOption?.typeId,
+                        optionId: selectedOption?.id,
                       );
                       await cartRepo.addToCart(CartRequestModel(items: [cartItem]));
                       if (!context.mounted) return;

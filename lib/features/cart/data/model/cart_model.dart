@@ -5,21 +5,23 @@ class CartModel {
   final int productId;
   final int quantity;
   final double spicy;
-  final List<OptionModel> selectedOptions;
+  final int? optionTypeId; // ممكن يكون null
+  final int? optionId;     // ممكن يكون null
 
   CartModel({
     required this.productId,
     required this.quantity,
     required this.spicy,
-    required this.selectedOptions,
+    this.optionTypeId,
+    this.optionId,
   });
-
   Map<String, dynamic> toJson() {
     return {
       'product_id': productId,
       'quantity': quantity,
       'spicy': spicy,
-      'options': selectedOptions.map((opt) => opt.toJson()).toList(),
+      'option_type_id': optionTypeId,
+      'option_id': optionId,
     };
   }
 }
