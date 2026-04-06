@@ -15,7 +15,6 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'hungerApp',
       theme: ThemeData(scaffoldBackgroundColor: Colors.white),
-
       home: LoginView(),
     );
   }

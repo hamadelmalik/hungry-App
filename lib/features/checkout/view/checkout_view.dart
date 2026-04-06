@@ -1,17 +1,26 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hungry/core/constants/assets_app.dart';
 import 'package:hungry/core/constants/color_palette.dart';
+import 'package:hungry/core/network/api_error.dart';
+import 'package:hungry/features/checkout/data/model/order_item_model.dart';
+import 'package:hungry/features/checkout/data/model/order_model.dart';
+import 'package:hungry/features/checkout/data/repo/order_repo.dart';
 import 'package:hungry/features/checkout/view/widget/order_details_widget.dart';
+import 'package:hungry/features/home/data/model/option_model.dart';
 import 'package:hungry/shared/custom_btn.dart';
 import 'package:hungry/shared/custom_text.dart';
 
 class CheckoutView extends StatefulWidget {
   final String totalPrice;
-  const CheckoutView({super.key, required this.totalPrice});
+  final List<OrderItemModel> cartItems;
 
-
+  const CheckoutView({
+    super.key,
+    required this.totalPrice,
+    required this.cartItems,
+  });
 
   @override
   State<CheckoutView> createState() => _CheckoutViewState();
@@ -19,27 +28,134 @@ class CheckoutView extends StatefulWidget {
 
 class _CheckoutViewState extends State<CheckoutView> {
   String? selectedMethod = 'cash';
+  bool isLoading = false;
+  final OrderRepo orderRepo = OrderRepo();
+
+  Future<void> handlePayment() async {
+    if (isLoading) return;
+
+    if (selectedMethod == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please select payment method")),
+      );
+      return;
+    }
+
+    setState(() => isLoading = true);
+
+    try {
+      final items = widget.cartItems.map((item) {
+        return OrderItemModel(
+          productId: item.productId,
+          quantity: item.quantity,
+          spicy: item.spicy,
+          optionsByType: (item.optionsByType ?? {}).map(
+                (key, value) => MapEntry(
+              key,
+              value.map((e) => e).toList(),
+            ),
+          ),
+        );
+      }).toList();
+
+      final order = OrderModel(
+        items: items,
+        totalPrice: double.parse(widget.totalPrice),
+      );
+
+      log("ORDER JSON BEFORE SEND: ${order.toJson()}");
+
+      final result = await orderRepo.saveOrder(order);
+
+      if (result != null) {
+        _showSuccessDialog();
+      } else {
+        throw ApiError(message: 'Order failed');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Order Failed")),
+      );
+    }
+
+    setState(() => isLoading = false);
+  }
+
+  void _showSuccessDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 100),
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircleAvatar(
+                    radius: 40,
+                    backgroundColor: ColorPalette.primaryColor,
+                    child: const Icon(Icons.check, size: 50, color: Colors.white),
+                  ),
+                  const Gap(10),
+                  CustomText(
+                    text: 'Success !',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 30,
+                    color: ColorPalette.primaryColor,
+                  ),
+                  const Gap(10),
+                  const CustomText(
+                    text: 'Your payment was successful.\nA receipt for this purchase\nhas been sent to your email.',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                    color: Color(0xFFBCBBBB),
+                  ),
+                  const Gap(30),
+                  CustomBtn(
+                    heightSize: 50,
+                    widthSize: 220,
+                    backgroundColor: ColorPalette.primaryColor.withOpacity(0.2),
+                    onTap: () {
+                      Navigator.pop(context); // close dialog
+                      Navigator.pop(context); // return to previous screen
+                    },
+                    child: CustomText(
+                      text: 'Close',
+                      color: ColorPalette.primaryColor,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    final total = (double.parse(widget.totalPrice) + 0.3 + 0.2).toStringAsFixed(2);
+
     return Scaffold(
       backgroundColor: Colors.white,
-
       appBar: AppBar(
         toolbarHeight: 60,
-        // أقل من 0 مش ممكن
         scrolledUnderElevation: 0,
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: ColorPalette.primaryColor,
-            size: 22,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          icon: Icon(Icons.arrow_back, color: ColorPalette.primaryColor, size: 22),
+          onPressed: () => Navigator.pop(context),
         ),
       ),
       body: SafeArea(
@@ -49,90 +165,60 @@ class _CheckoutViewState extends State<CheckoutView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CustomText(
+                const CustomText(
                   text: 'Order Summary',
                   fontWeight: FontWeight.bold,
                   fontSize: 25,
-
                 ),
                 OrderDetailsWidget(
                   order: widget.totalPrice,
                   taxes: '0.3',
                   fees: '0.2',
-                  total: (double.parse(widget.totalPrice.toString())
-                      + double.parse('0.3')
-                      + double.parse('0.2')).toString(),
-
-
-
-
+                  total: total,
                 ),
-
-                Gap(20),
-                CustomText(
+                const Gap(20),
+                const CustomText(
                   text: 'Payment Method',
                   fontWeight: FontWeight.bold,
                   fontSize: 25,
                 ),
-                Gap(20),
-                //---------cash-------------//
-                ListTile(
-                  onTap: () {
-                    setState(() {
-                      selectedMethod = 'cash';
-                    });
-                  },
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  contentPadding: EdgeInsets.symmetric(
-                    vertical: 8,
-                    horizontal: 16,
-                  ),
+                const Gap(20),
 
-                  tileColor: Color(0xff3C2F2F),
+                // Cash
+                ListTile(
+                  onTap: () => setState(() => selectedMethod = 'cash'),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  tileColor: const Color(0xff3C2F2F),
                   leading: Image.asset(AssetsPath.dollar, width: 50),
                   title: const CustomText(
                     text: 'Cash on Delivery',
                     color: Colors.white,
                     fontSize: 16,
-                    fontWeight:FontWeight.bold,
+                    fontWeight: FontWeight.bold,
                   ),
                   trailing: Radio<String>(
                     value: 'cash',
                     groupValue: selectedMethod,
-                    activeColor: Colors.white, // لون عند الاختيار
-                    onChanged: (v) {
-                      setState(() {
-                        selectedMethod = v!;
-                      });
-                    },
+                    activeColor: Colors.white,
+                    onChanged: (v) => setState(() => selectedMethod = v),
                   ),
                 ),
-                Gap(12),
-                //-------------dept-----------------------//
-                ListTile(
-                  onTap: () {
-                    setState(() {
-                      selectedMethod = 'dept';
-                    });
-                  },
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  contentPadding: EdgeInsets.symmetric(
-                    vertical: 8,
-                    horizontal: 16,
-                  ),
 
+                const Gap(12),
+
+                // Debit Card
+                ListTile(
+                  onTap: () => setState(() => selectedMethod = 'dept'),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                   tileColor: Colors.blue.shade900,
                   leading: Image.asset(AssetsPath.Asset, width: 50),
                   title: const CustomText(
                     text: 'Debit card',
                     color: Colors.white,
                     fontSize: 16,
-                    fontWeight:FontWeight.bold,
-
+                    fontWeight: FontWeight.bold,
                   ),
                   subtitle: const CustomText(
                     text: '******2345',
@@ -142,19 +228,15 @@ class _CheckoutViewState extends State<CheckoutView> {
                   trailing: Radio<String>(
                     value: 'dept',
                     groupValue: selectedMethod,
-                    activeColor: Colors.white, // لون عند الاختيار
-                    onChanged: (v) {
-                      setState(() {
-                        selectedMethod = v!;
-                      });
-                    },
+                    activeColor: Colors.white,
+                    onChanged: (v) => setState(() => selectedMethod = v),
                   ),
                 ),
 
-                Gap(10),
+                const Gap(10),
+
                 Row(
-                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
+                  children: const [
                     Icon(Icons.check_box, color: Colors.red),
                     Gap(10),
                     CustomText(text: 'Save card details for future payments'),
@@ -165,6 +247,7 @@ class _CheckoutViewState extends State<CheckoutView> {
           ),
         ),
       ),
+
       bottomSheet: Container(
         height: 120,
         decoration: BoxDecoration(
@@ -175,30 +258,26 @@ class _CheckoutViewState extends State<CheckoutView> {
               color: Colors.black.withAlpha(12),
               blurRadius: 20,
               spreadRadius: 2,
-              offset: Offset(0, -4), // ظل لفوق (مناسب للـ bottomSheet)
+              offset: const Offset(0, -4),
             ),
           ],
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CustomText(
+                  const CustomText(
                     text: 'Total',
                     fontSize: 16,
                     color: Colors.black,
                     fontWeight: FontWeight.w600,
                   ),
-
                   CustomText(
-                    text: (double.parse(widget.totalPrice.toString())
-                        + double.parse('0.3')
-                        + double.parse('0.2')).toString(),
+                    text: total,
                     fontSize: 16,
                     color: Colors.black,
                     fontWeight: FontWeight.w600,
@@ -209,82 +288,13 @@ class _CheckoutViewState extends State<CheckoutView> {
                 heightSize: 50,
                 widthSize: 150,
                 backgroundColor: ColorPalette.primaryColor,
-                child: CustomText(
+                child: const CustomText(
                   text: 'Pay Now',
                   color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
-                onTap: () {
-                  showAdaptiveDialog(
-                    context: context,
-                    builder: (context) {
-                      return Dialog(
-                        backgroundColor: Colors.transparent,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20.0,
-                            vertical: 100,
-                          ),
-                          child: Container(
-                            padding: EdgeInsets.all(20),
-
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                CircleAvatar(
-                                  radius: 40,
-                                  backgroundColor: ColorPalette.primaryColor,
-                                  child: Icon(
-                                    Icons.check,
-                                    size: 50,
-                                    weight: 700, // مدعوم
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                Gap(10),
-                                CustomText(
-                                  text: 'Success !',
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 30,
-                                  color: ColorPalette.primaryColor,
-                                ),
-                                Gap(10),
-                                CustomText(
-                                  text:
-                                      'Your payment was successful.\n A receipt for this purchase\n has been sent to your email. !',
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
-                                  color: Color(0xFFBCBBBB),
-                                ),
-                                Gap(100),
-                                CustomBtn(
-                                  heightSize: 50,
-                                  widthSize: 220,
-                                  backgroundColor: ColorPalette.primaryColor
-                                      .withValues(alpha: 0.20),
-                                  onTap: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: CustomText(
-                                    text: 'Close',
-                                    color: ColorPalette.primaryColor,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  );
-                },
+                onTap: handlePayment,
               ),
             ],
           ),

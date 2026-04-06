@@ -1,7 +1,7 @@
 import 'dart:developer';
 import 'package:hungry/core/network/api_services.dart';
 import 'package:hungry/features/home/data/model/product_model.dart';
-import 'package:hungry/features/home/data/model/topping_model.dart';
+import 'package:hungry/features/home/data/model/option_model.dart';
 
 class ProductRepo {
   ApiServices apiServices = ApiServices();

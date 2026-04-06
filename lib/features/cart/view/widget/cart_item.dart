@@ -25,75 +25,90 @@ class CustomCartItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       color: Colors.white,
-
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Image.network(
-                    'http://192.168.1.19:8000/storage/uploadimages/$image',
-                    width: 80,
-                    height: 80,
-                    fit: BoxFit.cover,
-                  ),
-                  CustomText(text: text, fontWeight: FontWeight.bold),
-                ],
-              ),
-            ),
-            Column(
+
+            /// الصورة + الاسم
+            Row(
               children: [
+                Image.network(
+                  'http://192.168.1.19:8000/storage/uploadimages/$image',
+                  width: 70,
+                  height: 70,
+                  fit: BoxFit.cover,
+                ),
+                const SizedBox(width: 10),
+
+                /// الاسم
+                Expanded(
+                  child: CustomText(
+                    text: text,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    //maxLines: 2,
+                  ),
+                ),
+              ],
+            ),
+
+            const Gap(10),
+
+            /// الازرار
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+
+                /// + و -
                 Row(
                   children: [
                     GestureDetector(
-                      onTap: onAdd,
+                      onTap: onMinus,
                       child: CircleAvatar(
                         radius: 18,
-                        // نصف القطر
                         backgroundColor: ColorPalette.primaryColor,
-                        // 👈 لون الخلفية
-                        child: Icon(CupertinoIcons.add, color: Colors.white),
+                        child: const Icon(CupertinoIcons.minus,
+                            color: Colors.white),
                       ),
                     ),
-                    Gap(10),
+
+                    const Gap(10),
+
                     CustomText(
                       text: number.toString(),
                       fontWeight: FontWeight.bold,
                       fontSize: 20,
                     ),
-                    Gap(10),
+
+                    const Gap(10),
 
                     GestureDetector(
-                      onTap: onMinus,
+                      onTap: onAdd,
                       child: CircleAvatar(
                         radius: 18,
-                        // نصف القطر
                         backgroundColor: ColorPalette.primaryColor,
-                        // 👈 لون الخلفية
-                        child: Icon(CupertinoIcons.minus, color: Colors.white),
+                        child:
+                        const Icon(CupertinoIcons.add, color: Colors.white),
                       ),
                     ),
                   ],
                 ),
-                Gap(10),
+
+                /// زر Remove
                 CustomBtn(
-                  heightSize: 44,
-                  widthSize: 145,
+                  heightSize: 40,
+                  widthSize: 110,
                   backgroundColor: ColorPalette.primaryColor,
                   onTap: onRemove,
-                  child: CustomText(
+                  child: const CustomText(
                     text: 'Remove',
                     color: Colors.white,
-                    fontSize: 16,
+                    fontSize: 14,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

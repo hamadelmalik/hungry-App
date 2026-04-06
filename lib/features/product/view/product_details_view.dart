@@ -5,7 +5,7 @@ import 'package:gap/gap.dart';
 import 'package:hungry/core/constants/color_palette.dart';
 import 'package:hungry/features/cart/data/model/cart_model.dart';
 import 'package:hungry/features/cart/data/repo/cart_repo.dart';
-import 'package:hungry/features/home/data/model/topping_model.dart';
+import 'package:hungry/features/home/data/model/option_model.dart';
 import 'package:hungry/features/home/data/repo/product_repo.dart';
 import 'package:hungry/features/product/data/product_repo.dart';
 import 'package:hungry/features/product/view/widget/custom_bottom.dart';
@@ -181,6 +181,7 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
                         productId: widget.productId,
                         quantity: 1,
                         spicy: spicyValue,
+                        optionsByType: optionsByType, // ✅ pass the Map
                       );
                       await cartRepo.addToCart(CartRequestModel(items: [cartItem]));
                       if (!context.mounted) return;

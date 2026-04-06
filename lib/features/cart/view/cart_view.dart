@@ -10,11 +10,12 @@ import 'package:hungry/features/auth/view/widget/guest_mode.dart';
 import 'package:hungry/features/cart/data/model/cart_model.dart';
 import 'package:hungry/features/cart/data/repo/cart_repo.dart';
 import 'package:hungry/features/cart/view/widget/cart_item.dart';
+import 'package:hungry/features/checkout/data/model/order_item_model.dart';
 import 'package:hungry/features/checkout/view/checkout_view.dart';
+import 'package:hungry/features/home/data/model/option_model.dart';
 import 'package:hungry/shared/custom_btn.dart';
 import 'package:hungry/shared/custom_snak.dart';
 import 'package:hungry/shared/custom_text.dart';
-
 class CartView extends StatefulWidget {
   const CartView({super.key});
 
@@ -186,10 +187,20 @@ if(!isGuest) {
                           context,
                           MaterialPageRoute(
                             builder: (_) =>
-                                CheckoutView(totalPrice: cartResponse?.cartData
-                                    .totalPrice ?? '0.0',),
-                          ),
-                        );
+                                CheckoutView(
+                                  totalPrice: cartResponse?.cartData.totalPrice ?? '0.0',
+                                  cartItems: (cartResponse?.cartData.items ?? []).map((item) {
+                                    return OrderItemModel(
+                                      productId: item.productId,
+                                      quantity: item.quantity,
+                                      spicy: item.spicy,
+                                      optionsByType: {
+                                        'selectedOption': item.options, // مباشرة من CartItemModel
+                                      },
+                                    );
+                                  }).toList(),
+                                ),
+                        ));
                       },
                       child: const CustomText(
                         text: 'Check out',

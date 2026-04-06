@@ -2,8 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:hungry/core/network/api_error.dart';
 
 class ApiExpectations{
-
-
 static ApiError handleError(DioException  error){
   switch (error.type){
 

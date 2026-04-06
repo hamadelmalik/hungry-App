@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 import 'package:hungry/core/network/api_expectations.dart';
 import 'package:hungry/core/network/dio_clint.dart';
@@ -24,6 +26,10 @@ class ApiServices {
 
 
     } on DioException catch (e) {
+      log("🔥 DIO ERROR RESPONSE: ${e.response?.data}");
+      log("🔥 DIO ERROR STATUS: ${e.response?.statusCode}");
+      log("🔥 DIO ERROR MESSAGE: ${e.message}");
+
       throw ApiExpectations.handleError(e);
     }
   }

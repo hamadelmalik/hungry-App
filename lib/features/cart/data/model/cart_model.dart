@@ -1,25 +1,27 @@
 //---------to Backend--------------
+import 'package:hungry/features/home/data/model/option_model.dart';
+
 class CartModel {
   final int productId;
   final int quantity;
   final double spicy;
-  final List<int> toppings;
-  final List<int> options;
+  final List<OptionModel> selectedOptions;
+
   CartModel({
     required this.productId,
     required this.quantity,
     required this.spicy,
-    this.toppings = const [],
-    this.options = const [],
+    required this.selectedOptions,
   });
 
-  Map<String, dynamic> toJson() => {
-    "product_id": productId,
-    "quantity": quantity,
-    'spicy': spicy,
-     "toppings": toppings,
-   "side_options": options,
-  };
+  Map<String, dynamic> toJson() {
+    return {
+      'product_id': productId,
+      'quantity': quantity,
+      'spicy': spicy,
+      'options': selectedOptions.map((opt) => opt.toJson()).toList(),
+    };
+  }
 }
 
 class CartRequestModel {
@@ -32,7 +34,7 @@ class CartRequestModel {
   };
 }
 
-//-------response  from Backend---------------
+//-------response from Backend---------------
 class GetCartResponseModel {
   final int code;
   final String message;
@@ -54,20 +56,16 @@ class GetCartResponseModel {
 }
 
 class CartDataModel {
-  final int id;
-
   final String totalPrice;
   final List<CartItemModel> items;
 
   CartDataModel({
-    required this.id,
     required this.totalPrice,
     required this.items,
   });
 
   factory CartDataModel.fromJson(Map<String, dynamic> json) {
     return CartDataModel(
-      id: json['id'] ?? 0,
       totalPrice: json['total_price']?.toString() ?? '0',
       items: (json['items'] as List? ?? [])
           .map((e) => CartItemModel.fromJson(e))
@@ -82,10 +80,10 @@ class CartItemModel {
   final String name;
   final String image;
   final int quantity;
-  final double price;
+  final double unitPrice;
+  final double totalPrice;
   final double spicy;
-  final List<int> topping;
-  final List<int> sideOption;
+  final List<OptionModel> options;
 
   CartItemModel({
     required this.itemId,
@@ -93,10 +91,10 @@ class CartItemModel {
     required this.name,
     required this.image,
     required this.quantity,
-    required this.price,
+    required this.unitPrice,
+    required this.totalPrice,
     required this.spicy,
-    required this.topping,
-    required this.sideOption,
+    required this.options,
   });
 
   factory CartItemModel.fromJson(Map<String, dynamic> json) {
@@ -106,10 +104,12 @@ class CartItemModel {
       name: json['name'] ?? '',
       image: json['image'] ?? '',
       quantity: json['quantity'] ?? 0,
-      price: double.tryParse(json['price'].toString()) ?? 0.0,
+      unitPrice: double.tryParse(json['unit_price'].toString()) ?? 0.0,
+      totalPrice: double.tryParse(json['total_price'].toString()) ?? 0.0,
       spicy: double.tryParse(json['spicy'].toString()) ?? 0.0,
-      topping: List<int>.from(json['topping'] ?? []),
-      sideOption: List<int>.from(json['side_option'] ?? []),
+      options: (json['options'] as List? ?? [])
+          .map((e) => OptionModel.fromJson(e))
+          .toList(),
     );
   }
 }
