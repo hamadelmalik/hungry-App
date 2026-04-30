@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:hungry/core/network/api_services.dart';
+import 'package:hungry/features/home/data/model/option_type.dart';
 import 'package:hungry/features/home/data/model/product_model.dart';
 import 'package:hungry/features/home/data/model/option_model.dart';
 
@@ -49,6 +50,21 @@ class ProductRepo {
     }
   }
 
+  //------------getNewOptions
+
+  Future<List<OptionType>> getNewOption() async {
+    try {
+      final response = await apiServices.get('/option-types-new');
+
+      final List data = response['data'];
+      log(data.toString());
+
+      return data.map((e) => OptionType.fromJson(e)).toList();
+    } catch (e) {
+      log(e.toString());
+      return [];
+    }
+  }
 //----------------searchProduct----------------------//
   Future<List<ProductModel>> searchProducts(String name) async {
     try {

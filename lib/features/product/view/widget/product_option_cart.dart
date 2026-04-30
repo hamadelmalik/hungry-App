@@ -18,6 +18,7 @@ class ProductOptionCart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(28), // 👈 قصّ الكارد
       child: Container(
@@ -63,6 +64,7 @@ class ProductOptionCart extends StatelessWidget {
                       color: Colors.white,
                     ),
                   ),
+
                   Container(
                     width: 34,
                     height: 34,

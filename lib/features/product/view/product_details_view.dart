@@ -9,7 +9,7 @@ import 'package:hungry/features/home/data/model/option_model.dart';
 import 'package:hungry/features/home/data/repo/product_repo.dart';
 import 'package:hungry/features/product/data/product_repo.dart';
 import 'package:hungry/features/product/view/widget/custom_bottom.dart';
-import 'package:hungry/features/product/view/widget/ingredient_card.dart';
+import 'package:hungry/features/product/view/widget/product_option_cart.dart';
 import 'package:hungry/features/product/view/widget/spicy_slider.dart';
 import 'package:hungry/shared/custom_text.dart';
 
@@ -117,7 +117,7 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
                                   colorIcn: Colors.white,
                                   boxDecoration: Colors.grey,
                                   onAdd: () {
-                                    // هنا ممكن تضيف الاختيارات للمتحولات
+                                    // action
                                   },
                                 ),
                               );

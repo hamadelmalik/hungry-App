@@ -107,14 +107,16 @@ backgroundColor: ColorPalette.primaryColor,
                       ),
                       Gap(20),
                       //----------login------//
-                      isLoading?CupertinoActivityIndicator(color: Colors.white,):
+                    //  isLoading?CupertinoActivityIndicator(color: ColorPalette.primaryColor,):
                       CustomAuthBottom(
-                        background: ColorPalette.primaryColor,
+                        text: 'Login',
                         height: 60,
                         width: double.infinity,
-                        onTap: login,
-                        text: 'Login',fontSize: 20,
+                        background: ColorPalette.primaryColor,
                         textColor: Colors.white,
+                        fontSize: 20,
+                        isLoading: isLoading,
+                        onTap: login,
                       ),
                       Gap(20),
                       Row(

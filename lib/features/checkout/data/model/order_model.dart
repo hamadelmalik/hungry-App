@@ -1,28 +1,27 @@
 import 'order_item_model.dart';
 
-import 'order_item_model.dart';
 
 class OrderModel {
   final List<OrderItemModel> items;
-  final double totalPrice;
+  final double total;
 
   OrderModel({
     required this.items,
-    required this.totalPrice,
+    required this.total,
   });
 
-  // تحويل للـ JSON (عشان تبعت للـ API)
+  // to json (send to Laravel)
   Map<String, dynamic> toJson() {
     return {
       'items': items.map((item) => item.toJson()).toList(),
-      'total_price': totalPrice,
+      'total': total,
     };
   }
 
-  // تحويل من JSON (لو هتستقبل بيانات من API)
+  // from json (receive from Laravel)
   factory OrderModel.fromJson(Map<String, dynamic> json) {
     return OrderModel(
-      totalPrice: (json['total_price'] ?? 0).toDouble(),
+      total: double.tryParse(json['total'].toString()) ?? 0.0,
       items: (json['items'] as List? ?? [])
           .map((e) => OrderItemModel.fromJson(e))
           .toList(),

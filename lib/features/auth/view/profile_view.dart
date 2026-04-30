@@ -162,11 +162,7 @@ class _ProfileViewState extends State<ProfileView> {
         .then((v) {
           _name.text = userModel?.name.toString() ?? 'hamad';
           _email.text = userModel?.email.toString() ?? 'Hamad4alll@gmail.com';
-          _address.text =
-              (userModel?.address == null ||
-                  userModel?.address.toLowerCase() == 'null')
-              ? 'Sudan'
-              : userModel!.address;
+          _address.text =userModel?.address.toString() ?? 'sudan';
           _visa.text = userModel?.visa.toString() ?? '';
 
           // تحديث الواجهة بعد تغيير البيانات

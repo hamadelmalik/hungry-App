@@ -8,18 +8,20 @@ import 'package:hungry/features/checkout/data/model/order_item_model.dart';
 import 'package:hungry/features/checkout/data/model/order_model.dart';
 import 'package:hungry/features/checkout/data/repo/order_repo.dart';
 import 'package:hungry/features/checkout/view/widget/order_details_widget.dart';
-import 'package:hungry/features/home/data/model/option_model.dart';
 import 'package:hungry/shared/custom_btn.dart';
 import 'package:hungry/shared/custom_text.dart';
+import 'package:hungry/shared/isloading_btn.dart';
 
 class CheckoutView extends StatefulWidget {
   final String totalPrice;
   final List<OrderItemModel> cartItems;
+  final VoidCallback? onCartCleared;
 
   const CheckoutView({
     super.key,
     required this.totalPrice,
     required this.cartItems,
+     this.onCartCleared,
   });
 
   @override
@@ -60,7 +62,7 @@ class _CheckoutViewState extends State<CheckoutView> {
 
       final order = OrderModel(
         items: items,
-        totalPrice: double.parse(widget.totalPrice),
+        total: double.parse(widget.totalPrice),
       );
 
       log("ORDER JSON BEFORE SEND: ${order.toJson()}");
@@ -68,6 +70,8 @@ class _CheckoutViewState extends State<CheckoutView> {
       final result = await orderRepo.saveOrder(order);
 
       if (result != null) {
+        widget.onCartCleared?.call();
+
         _showSuccessDialog();
       } else {
         throw ApiError(message: 'Order failed');
@@ -284,18 +288,14 @@ class _CheckoutViewState extends State<CheckoutView> {
                   ),
                 ],
               ),
-              CustomBtn(
-                heightSize: 50,
-                widthSize: 150,
+              LoadingButton(
+                height: 50,
+                width: 150,
+                text: "Pay Now",
+                isLoading: isLoading,
                 backgroundColor: ColorPalette.primaryColor,
-                child: const CustomText(
-                  text: 'Pay Now',
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-                onTap: handlePayment,
-              ),
+                onPressed: handlePayment,
+              )
             ],
           ),
         ),

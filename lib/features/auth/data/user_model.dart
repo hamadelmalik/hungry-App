@@ -2,17 +2,17 @@ class UserModel {
   final int id;
   final String name;
   final String email;
-  final String address;
-  final String visa;
+  final String? address;
+  final String? visa;
   final String image;
-  final String? token; // ✅ أضفنا التوكن هنا
+  final String? token;
 
   UserModel({
     required this.id,
     required this.name,
     required this.email,
-    required this.address,
-    required this.visa,
+    this.address,
+    this.visa,
     required this.image,
     this.token,
   });

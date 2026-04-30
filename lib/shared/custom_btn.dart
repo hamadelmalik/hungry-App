@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:hungry/core/constants/color_palette.dart';
 class CustomBtn extends StatelessWidget {
   final double heightSize,widthSize;
-
   final Color? backgroundColor,borderColor;
   final VoidCallback? onTap;
   final Widget child;
@@ -20,7 +19,6 @@ class CustomBtn extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: borderColor ?? Colors.white),
             color: backgroundColor ?? ColorPalette.primaryColor),
-
         child:  child,
       ),
     );

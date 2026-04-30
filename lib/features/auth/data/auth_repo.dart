@@ -205,17 +205,15 @@ class AuthRepo {
       });
 
       final response = await apiServices.post('/update-profile', formData);
-      print("✅ RESPONSE: $response");
+
+      log("🔥 RESPONSE DATA: $response");
 
       if (response is ApiError) {
         throw response;
       }
 
-      if (response is! Map<String, dynamic>) {
-        throw ApiError(message: 'Invalid response format');
-      }
 
-      final code = parseResponseCode(response) ?? 0;
+      final code = response['code'] ?? 0;
       final msg = response['message'];
       final data = response['data'];
 

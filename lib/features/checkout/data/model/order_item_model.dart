@@ -16,7 +16,7 @@ class OrderItemModel {
     required this.optionsByType,
   });
 
-  // تحويل من JSON
+  // From  JSON
   factory OrderItemModel.fromJson(Map<String, dynamic> json) {
     final Map<String, List<OptionModel>> optionsMap = {};
     (json['options_by_type'] as Map<String, dynamic>? ?? {}).forEach((key, value) {
@@ -28,12 +28,12 @@ class OrderItemModel {
     return OrderItemModel(
       productId: json['product_id'],
       quantity: json['quantity'],
-      spicy: json['spicy']?.toDouble(),
+      spicy: double.tryParse(json['spicy'].toString()) ?? 0.0,
       optionsByType: optionsMap,
     );
   }
 
-  // تحويل لـ JSON
+  // To  JSON
   Map<String, dynamic> toJson() {
     return {
       "product_id": productId,
