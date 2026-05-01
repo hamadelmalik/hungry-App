@@ -38,13 +38,27 @@ class CartRepo {
   ///------------ remove cart--------------
   Future<void> removeCartItem(int id) async {
     try {
-      final res = await apiServices.delete('/cart/remove/$id', {});
+      final res = await apiServices.delete('/cart/remove/$id' );
       log("🔍🔍🔍🔍🔍🔍🔍 CART remove : $res");
       if (res['code'] == 200 && res['data'] == null) {
-        throw ApiError(message: 'cart deleted  successfully');
+        throw ApiError(message: 'Cart Deleted  Successfully');
       }
     } catch (e) {
       throw ApiError(message: e.toString());
     }
   }
+  //clear cart items
+
+  Future<bool> clearCart() async {
+    try {
+      final response = await apiServices.delete('/cart/clear');
+
+      return response['code'] == 200;
+    } catch (e) {
+      log("❌ CLEAR CART ERROR: $e");
+      return false;
+    }
+  }
 }
+
+

@@ -4,6 +4,7 @@ import 'package:gap/gap.dart';
 import 'package:hungry/core/constants/assets_app.dart';
 import 'package:hungry/core/constants/color_palette.dart';
 import 'package:hungry/core/network/api_error.dart';
+import 'package:hungry/features/cart/data/repo/cart_repo.dart';
 import 'package:hungry/features/checkout/data/model/order_item_model.dart';
 import 'package:hungry/features/checkout/data/model/order_model.dart';
 import 'package:hungry/features/checkout/data/repo/order_repo.dart';
@@ -32,6 +33,16 @@ class _CheckoutViewState extends State<CheckoutView> {
   String? selectedMethod = 'cash';
   bool isLoading = false;
   final OrderRepo orderRepo = OrderRepo();
+  final CartRepo cartRepo=CartRepo();
+  Future<bool> clearCart()async{
+    try{
+      final res=await cartRepo.clearCart();
+      return true;
+    }catch (e){
+      return false;
+    }
+
+  }
 
   Future<void> handlePayment() async {
     if (isLoading) return;
@@ -70,9 +81,12 @@ class _CheckoutViewState extends State<CheckoutView> {
       final result = await orderRepo.saveOrder(order);
 
       if (result != null) {
+        await clearCart(); // مهم
         widget.onCartCleared?.call();
-
         _showSuccessDialog();
+        await cartRepo.clearCart();
+
+
       } else {
         throw ApiError(message: 'Order failed');
       }

@@ -43,7 +43,7 @@ class ApiServices {
     }
   }
 
-  Future<dynamic> delete(String endPoint, dynamic body, {dynamic param}) async {
+  Future<dynamic> delete(String endPoint,{ dynamic body ,dynamic param}) async {
     try {
       final response = await dioClint.dio.delete(
         endPoint,

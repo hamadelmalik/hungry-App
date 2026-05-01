@@ -9,10 +9,10 @@ import 'package:hungry/features/auth/data/user_model.dart';
 import 'package:hungry/features/auth/view/widget/guest_mode.dart';
 import 'package:hungry/features/cart/data/model/cart_model.dart';
 import 'package:hungry/features/cart/data/repo/cart_repo.dart';
+import 'package:hungry/features/cart/view/widget/cart_empty.dart';
 import 'package:hungry/features/cart/view/widget/cart_item.dart';
 import 'package:hungry/features/checkout/data/model/order_item_model.dart';
 import 'package:hungry/features/checkout/view/checkout_view.dart';
-import 'package:hungry/features/home/data/model/option_model.dart';
 import 'package:hungry/shared/custom_btn.dart';
 import 'package:hungry/shared/custom_snak.dart';
 import 'package:hungry/shared/custom_text.dart';
@@ -75,6 +75,11 @@ class _CartViewState extends State<CartView> {
        final itemCount = res.cartData.items.length ;
       setState(() {
         cartResponse = res;
+        if (itemCount == 0) {
+          quantities = [];
+          isLoading = false;
+          return;
+        }
         quantities = List.generate(itemCount, (_) => 1);
 
       });
@@ -116,8 +121,12 @@ class _CartViewState extends State<CartView> {
 
   @override
   Widget build(BuildContext context) {
+    if (cartResponse != null && cartResponse!.cartData.items.isEmpty) {
+      return const CartEmpty();
+    }else
+if(!isGuest)
 
-if(!isGuest) {
+{
   return Scaffold(
     appBar: AppBar(
       toolbarHeight: 0,
@@ -219,7 +228,8 @@ if(!isGuest) {
       ),
     ),
   );
-}else if(isGuest){
+}
+else if(isGuest){
   return GuestModeView();
 
 }
