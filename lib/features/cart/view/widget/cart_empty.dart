@@ -3,7 +3,6 @@ import 'package:hungry/core/constants/color_palette.dart';
 import 'package:hungry/features/home/view/home_view.dart';
 class CartEmpty extends StatelessWidget {
   const CartEmpty({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,7 +42,7 @@ class CartEmpty extends StatelessWidget {
 
               SizedBox(height: 30),
 
-              // زر تسجيل الدخول
+              //Home view ------------
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
@@ -56,8 +55,8 @@ class CartEmpty extends StatelessWidget {
                   minimumSize: Size(double.infinity, 50),
                 ),
                 child: Text(
-                  "الشاشة الرئيسة",
-                  style: TextStyle(fontSize: 18,color: Colors.white),
+                  "الشاشة الرئيسية",
+                  style: TextStyle(fontSize: 18,color: Colors.white,fontWeight: FontWeight.bold),
                 ),
               ),
 

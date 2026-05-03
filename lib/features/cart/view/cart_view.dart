@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hungry/core/constants/color_palette.dart';
 import 'package:hungry/core/network/api_error.dart';
-import 'package:hungry/features/auth/data/auth_repo.dart';
+import 'package:hungry/features/auth/repo/auth_repo.dart';
 import 'package:hungry/features/auth/data/user_model.dart';
 import 'package:hungry/features/auth/view/widget/guest_mode.dart';
 import 'package:hungry/features/cart/data/model/cart_model.dart';
