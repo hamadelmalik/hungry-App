@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hungry/core/constants/color_palette.dart';
@@ -9,10 +8,10 @@ import 'package:hungry/features/auth/data/user_model.dart';
 import 'package:hungry/features/auth/view/widget/guest_mode.dart';
 import 'package:hungry/features/cart/data/model/cart_model.dart';
 import 'package:hungry/features/cart/data/repo/cart_repo.dart';
-import 'package:hungry/features/cart/view/widget/cart_empty.dart';
-import 'package:hungry/features/cart/view/widget/cart_item.dart';
-import 'package:hungry/features/checkout/data/model/order_item_model.dart';
-import 'package:hungry/features/checkout/view/checkout_view.dart';
+import 'package:hungry/features/cart/presentation/view/widget/cart_empty.dart';
+import 'package:hungry/features/cart/presentation/view/widget/cart_item.dart';
+import 'package:hungry/features/order/data/model/order_item_model.dart';
+import 'package:hungry/features/order/view/checkout_view.dart';
 import 'package:hungry/shared/custom_btn.dart';
 import 'package:hungry/shared/custom_snak.dart';
 import 'package:hungry/shared/custom_text.dart';

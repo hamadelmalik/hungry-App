@@ -42,6 +42,7 @@ dependencies:
   shared_preferences: ^2.5.4
   skeletonizer: ^2.1.2
   image_picker: ^1.0.7
+  flutter_bloc: ^9.1.1
 
 dev_dependencies:
   flutter_test:

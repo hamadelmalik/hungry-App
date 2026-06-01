@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:hungry/core/constants/color_palette.dart';
 import 'package:hungry/features/auth/view/profile_view.dart';
 import 'package:hungry/features/cart/data/repo/cart_repo.dart';
-import 'package:hungry/features/cart/view/cart_view.dart';
+import 'package:hungry/features/cart/presentation/view/cart_view.dart';
 import 'package:hungry/features/home/view/home_view.dart';
-import 'package:hungry/features/orderHistory/view/order_history_view.dart';
+import 'package:hungry/features/order/view/order_history_view.dart';
 
 class PageRouteView extends StatefulWidget {
   const PageRouteView({super.key});

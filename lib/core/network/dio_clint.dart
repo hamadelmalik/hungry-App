@@ -5,7 +5,7 @@ import 'package:hungry/core/utils/perf_helper.dart';
 class DioClint{
   final Dio _dio=Dio(
     BaseOptions(
-    baseUrl: 'http://192.168.1.19:8000/api',
+    baseUrl: 'http://192.168.100.9:8000/api',
       headers: {'Content-Type': 'application/json'},
     ),
       );

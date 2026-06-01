@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:hungry/features/home/data/model/option_model.dart';
 
-import '../../../product/model/options_model.dart';
 class OrderItemModel {
   final int productId;
   final int quantity;

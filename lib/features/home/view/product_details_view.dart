@@ -7,10 +7,9 @@ import 'package:hungry/features/cart/data/model/cart_model.dart';
 import 'package:hungry/features/cart/data/repo/cart_repo.dart';
 import 'package:hungry/features/home/data/model/option_model.dart';
 import 'package:hungry/features/home/data/repo/product_repo.dart';
-import 'package:hungry/features/product/data/product_repo.dart';
-import 'package:hungry/features/product/view/widget/custom_bottom.dart';
-import 'package:hungry/features/product/view/widget/product_option_cart.dart';
-import 'package:hungry/features/product/view/widget/spicy_slider.dart';
+import 'package:hungry/features/home/view/product_cash_option.dart';
+import 'package:hungry/features/home/view/spicy_slider.dart';
+import 'package:hungry/features/home/view/widget/custom_buttn.dart';
 import 'package:hungry/shared/custom_text.dart';
 
 class ProductDetailsView extends StatefulWidget {

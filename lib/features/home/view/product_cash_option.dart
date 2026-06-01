@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hungry/core/constants/color_palette.dart';
 import 'package:hungry/shared/custom_text.dart';
-
 class ProductOptionCart extends StatelessWidget {
   final String image, title;
   final Color colorIcn, boxDecoration;

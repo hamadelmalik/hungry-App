@@ -2,7 +2,7 @@
 import 'dart:developer';
 import 'package:hungry/core/network/api_error.dart';
 import 'package:hungry/core/network/api_services.dart';
-import 'package:hungry/features/checkout/data/model/order_model.dart';
+import 'package:hungry/features/order/data/model/order_model.dart';
 class OrderRepo {
   final ApiServices apiServices = ApiServices();
 

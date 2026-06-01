@@ -1,6 +1,9 @@
 import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hungry/features/auth/cubit/auth_cubit.dart';
+import 'package:hungry/features/auth/cubit/auth_state.dart';
 import 'package:hungry/features/auth/view/login_view.dart';
 import 'package:hungry/features/auth/view/widget/custom_bottom.dart';
 import 'package:hungry/features/auth/view/widget/guest_mode.dart';
@@ -373,39 +376,45 @@ class _ProfileViewState extends State<ProfileView> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
-                  child: InkWell(
-                    onTap: isLoadingUpdate ? null : updateProfileData,
-                    child: Container(
-                      padding: EdgeInsets.all(10),
-                      height: 60,
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: ColorPalette.primaryColor,
-                          width: 2,
+                  //updateProfileData
+                  child: BlocBuilder<AuthCubit,AuthStates>(
+                    builder: (context,state){
+                      return InkWell(
+                        onTap: isLoadingUpdate ? null : updateProfileData,
+                        child: Container(
+                          padding: EdgeInsets.all(10),
+                          height: 60,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: ColorPalette.primaryColor,
+                              width: 2,
+                            ),
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Center(
+                            child: isLoadingUpdate
+                                ? CupertinoActivityIndicator(color: Colors.white)
+                                : Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                CustomText(
+                                  text: 'Edit Profile',
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                Icon(
+                                  Icons.edit_document,
+                                  color: ColorPalette.primaryColor,
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Center(
-                        child: isLoadingUpdate
-                            ? CupertinoActivityIndicator(color: Colors.white)
-                            : Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  CustomText(
-                                    text: 'Edit Profile',
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  Icon(
-                                    Icons.edit_document,
-                                    color: ColorPalette.primaryColor,
-                                  ),
-                                ],
-                              ),
-                      ),
-                    ),
+                      );
+                    },
+                   
                   ),
                 ),
                 SizedBox(width: 10), // مسافة بين الزرين
