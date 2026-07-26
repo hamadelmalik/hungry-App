@@ -1,5 +1,7 @@
 
 
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,14 +20,12 @@ import 'package:skeletonizer/skeletonizer.dart';
 class HomeView extends StatelessWidget  {
   const HomeView({super.key});
 
-
-
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<HomeCubit,HomeStates>(
       builder: (context,state){
-        final cubit=context.read<HomeCubit>();
+        final cubitHome=context.read<HomeCubit>();
+
         return GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),
           child: Skeletonizer(
@@ -38,6 +38,7 @@ class HomeView extends StatelessWidget  {
                   BlocBuilder<AuthCubit,AuthStates>(
                      builder: (context,state){
                        final cubitAuth=context.read<AuthCubit>();
+                 //      log("✅✅✅✅✅✅USER IMAGE: ${cubitAuth.userModel?.image}");
                        return SliverAppBar(
                          elevation: 0,
                          pinned: true,
@@ -63,15 +64,9 @@ class HomeView extends StatelessWidget  {
                                    userImage: cubitAuth.userModel?.image ?? '',
                                  ),
                                  Gap(20),
-                                 SearchWidget(controller: cubit.controller,onChanged: (value){
-                                   final query=value.toLowerCase();
-                                             cubit.products = cubit.allProducts
-                                         ?.where((e) =>
-                                         e.name.toLowerCase().startsWith(query.toLowerCase()))
-                                         .toList();
-
-
-                                 },),
+                                 SearchWidget(
+                                   controller: cubitHome.controller,
+                                   onChanged: cubitHome.searchProduct,),
                                ],
                              ),
                            ),
@@ -81,13 +76,13 @@ class HomeView extends StatelessWidget  {
 
                   ),
 
-                  /// Category
+                  /// ----------------------------Category--------------------
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.only(top: 20, left: 15, right: 15),
                       child: FoodHome(
-                        category: cubit.category,
-                        selectedIndex: cubit.selectedIndex,
+                        category: cubitHome.category,
+                        selectedIndex: cubitHome.selectedIndex,
                       ),
                     ),
                   ),
@@ -103,9 +98,10 @@ class HomeView extends StatelessWidget  {
                         crossAxisSpacing: 10,
                       ),
                       delegate: SliverChildBuilderDelegate(
-                        childCount: cubit.products?.length ?? 6,
+                        childCount: cubitHome.products?.length ?? 6,
                             (context, index) {
-                          final product = cubit.products?[index];
+                          final product = cubitHome.products?[index];
+                          log("Products Count: ${cubitHome.products?.length}");
                           if (product == null) {
                             return CupertinoActivityIndicator();
                           }

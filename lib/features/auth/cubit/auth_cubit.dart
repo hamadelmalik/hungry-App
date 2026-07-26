@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hungry/core/network/api_error.dart';
@@ -11,46 +13,62 @@ class AuthCubit extends Cubit<AuthStates>{
 //login function
 
 final AuthRepo authRepo=AuthRepo();
+//login screen controller
  final  emailController = TextEditingController(text:'hamad@gmail.com');
   final    passwordController = TextEditingController(text: '12345678');
-  final TextEditingController _name = TextEditingController();
-  final TextEditingController _email = TextEditingController();
-  final TextEditingController _address = TextEditingController();
-  final TextEditingController _visa = TextEditingController();
+  //profile  screen controller
+
+  // final TextEditingController _name = TextEditingController();
+  // final TextEditingController _email = TextEditingController();
+  // final TextEditingController _address = TextEditingController();
+  // final TextEditingController _visa = TextEditingController();
   final formKey = GlobalKey<FormState>();
   UserModel? userModel;
 
-Future<void> login({required String email ,required String password})async{
-//emit loading
-  emit(AuthLoading());
-  try{
-    //call function
-    await authRepo.login(email, password);
-    emit(AuthSuccess());
-  }catch (e) {
-    String errorMessage = "Something went wrong";
-   if(e is ApiError){
-  errorMessage=e.message;
-}
-  emit(AuthError(errorMessage));
-  }
-}
-//getProfileData
-Future getProfileData()async{
+  Future<void> login({
+    required String email,
+    required String password,
+  }) async {
+    emit(AuthLoading());
 
- userModel= await authRepo.getProfileData();
-  try{
+    try {
+      await authRepo.login(email, password);
 
-    emit(AuthSuccess());
-  }catch (e){
-    String errorMessage = "Something went wrong";
-    if( e is ApiError){
-      errorMessage=e.message;
+      await getProfileData(); // جلب بيانات المستخدم والصورة
+
+      emit(AuthSuccess());
+
+    } catch (e) {
+      String errorMessage = "Something went wrong";
+
+      if (e is ApiError) {
+        errorMessage = e.message;
+      }
+
+      emit(AuthError(errorMessage));
     }
-    emit(AuthError(errorMessage));
   }
+//getProfileData
+  Future<void> getProfileData() async {
+    try {
+      userModel = await authRepo.getProfileData();
 
-}
+      log("✅✅✅✅✅✅USER IMAGE: ${userModel?.image}");
+      log("✅✅✅✅✅✅USER name: ${userModel?.name}");
+      log("✅✅✅✅✅✅USER email: ${userModel?.email}");
+
+
+      emit(AuthSuccess());
+    } catch (e) {
+      String errorMessage = "Something went wrong";
+
+      if (e is ApiError) {
+        errorMessage = e.message;
+      }
+
+      emit(AuthError(errorMessage));
+    }
+  }
 //updateProfileData
 Future updateProfileData({required String  name, required String  email,required String  address  ,String? visa,
   String? imagePath})async{

@@ -91,7 +91,7 @@ class _SplashScreenState extends State<SplashScreen>
               mainAxisSize: MainAxisSize.min,
               children: [
                 Image.asset(
-                  'assets/images/lastlogo.png',
+                  'assets/images/last_logo.png',
                   fit: BoxFit.contain,
 
                 ),

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hungry/features/auth/cubit/auth_cubit.dart';
 import 'package:hungry/features/auth/view/login_view.dart';
+import 'package:hungry/features/cart/data/repo/cart_repo.dart';
+import 'package:hungry/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:hungry/features/home/cubit/home_cubit.dart';
 
 void main() {
@@ -17,9 +19,10 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
 
         providers: [
-
-        BlocProvider(create: (context) => AuthCubit(),),
-       BlocProvider(create: (context) => HomeCubit(),),
+       BlocProvider(create: (_) => AuthCubit()..getProfileData(),),
+       BlocProvider(create: (_) => HomeCubit()..getProducts(),),
+          //----------cart provider---------
+       BlocProvider( create: (_) => CartCubit(CartRepo()..getCartData()),),
 ],
     child: MaterialApp(
         debugShowCheckedModeBanner: false,

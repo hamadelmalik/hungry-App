@@ -27,8 +27,8 @@ class CardItem extends StatelessWidget {
             Center(
               child:  Image.network(
                 image,
-                width: 80,
-                height: 80,
+                width: 100,
+                height: 100,
               ),
 
             ),

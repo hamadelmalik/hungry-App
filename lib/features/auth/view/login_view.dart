@@ -49,7 +49,7 @@ class LoginView extends StatelessWidget {
                 children: [
                   Gap(20),
                   Image.asset(
-                    'assets/images/lastlogo.png',width: 400,height: 200,
+                    'assets/images/last_logo.png',width: 400,height: 200,
                     fit: BoxFit.contain,
 
                   ),

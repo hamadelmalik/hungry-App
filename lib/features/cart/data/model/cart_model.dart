@@ -5,8 +5,8 @@ class CartModel {
   final int productId;
   final int quantity;
   final double spicy;
-  final int? optionTypeId; // ممكن يكون null
-  final int? optionId;     // ممكن يكون null
+  final int? optionTypeId; // can be  null
+  final int? optionId;     // can be null
 
   CartModel({
     required this.productId,
@@ -25,6 +25,7 @@ class CartModel {
     };
   }
 }
+//-------request to  Backend---------------
 
 class CartRequestModel {
   final List<CartModel> items;

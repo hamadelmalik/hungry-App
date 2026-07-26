@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hungry/core/constants/api_constants.dart';
 import 'package:hungry/core/constants/color_palette.dart';
 import 'package:hungry/shared/custom_text.dart';
 class ProductOptionCart extends StatelessWidget {
@@ -44,7 +45,7 @@ class ProductOptionCart extends StatelessWidget {
                 borderRadius: BorderRadius.circular(22),
               ),
               child: Image.network(
-                "http://192.168.1.19:8000/storage/$image",
+                '${ApiConstants.storageUrl}/$image',
                 height: 70,
                 fit: BoxFit.contain,
               ),
@@ -65,8 +66,8 @@ class ProductOptionCart extends StatelessWidget {
                   ),
 
                   Container(
-                    width: 34,
-                    height: 34,
+                    width: 30,
+                    height: 30,
                     decoration: BoxDecoration(
                       color: boxDecoration,
                       shape: BoxShape.circle,

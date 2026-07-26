@@ -1,11 +1,12 @@
 
 import 'package:dio/dio.dart';
+import 'package:hungry/core/constants/api_constants.dart';
 import 'package:hungry/core/utils/perf_helper.dart';
 
 class DioClint{
   final Dio _dio=Dio(
     BaseOptions(
-    baseUrl: 'http://192.168.100.9:8000/api',
+      baseUrl: ApiConstants.apiUrl,
       headers: {'Content-Type': 'application/json'},
     ),
       );

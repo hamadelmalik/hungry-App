@@ -6,20 +6,8 @@ import 'package:hungry/features/cart/data/model/cart_model.dart';
 class CartRepo {
   ApiServices apiServices = ApiServices();
 
-  //=========addToCart-------------------
-
-   Future<void> addToCart(CartRequestModel cartData) async {
-    try {
-      final res = await apiServices.post('/cart/add', cartData.toJson());
-
-        log('✅ Success! Product added to cart: ${res['message']}');
 
 
-    } catch (e) {
-      log('❌ addToCart ERROR: $e');
-      throw ApiError(message: e.toString());
-    }
-  }
 
   //----------getCartResponse-------------------
   Future<GetCartResponseModel> getCartData() async {

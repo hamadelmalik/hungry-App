@@ -48,12 +48,17 @@ class UserHeader extends StatelessWidget {
         CircleAvatar(
           radius: 30,
           child: ClipOval(
-            child: Image.network(
+            child: userImage.isNotEmpty
+                ? Image.network(
               userImage,
               fit: BoxFit.cover,
               width: 60,
               height: 60,
-            ),
+              errorBuilder: (context, error, stackTrace) {
+                return const Icon(Icons.person);
+              },
+            )
+                : const Icon(Icons.person),
           ),
         ),
       ],

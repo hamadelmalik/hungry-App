@@ -1,16 +1,15 @@
 import 'dart:developer';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:hungry/core/constants/color_palette.dart';
 import 'package:hungry/features/cart/data/model/cart_model.dart';
-import 'package:hungry/features/cart/data/repo/cart_repo.dart';
-import 'package:hungry/features/home/data/model/option_model.dart';
-import 'package:hungry/features/home/data/repo/product_repo.dart';
-import 'package:hungry/features/home/view/product_cash_option.dart';
+import 'package:hungry/features/home/cubit/home_cubit.dart';
+import 'package:hungry/features/home/cubit/home_state.dart';
 import 'package:hungry/features/home/view/spicy_slider.dart';
-import 'package:hungry/features/home/view/widget/custom_buttn.dart';
-import 'package:hungry/shared/custom_text.dart';
+import 'package:hungry/features/home/view/widget/product_bottom_sheet.dart';
+import 'package:hungry/features/home/view/widget/product_options_list.dart';
+import 'package:hungry/shared/custom_snak.dart';
 
 class ProductDetailsView extends StatefulWidget {
   final String productImage, productPrice;
@@ -29,182 +28,102 @@ class ProductDetailsView extends StatefulWidget {
 
 class _ProductDetailsViewState extends State<ProductDetailsView> {
   double spicyValue = 0.5;
-  bool isLoading = false;
-  bool isOptionsLoading = false;
 
-  ProductRepo productRepo = ProductRepo();
-  CartRepo cartRepo = CartRepo();
-  OptionRepo optionRepo = OptionRepo();
-  OptionModel? selectedOption;
-  // ✅ Map لتخزين كل الخيارات حسب النوع
-  Map<String, List<OptionModel>> optionsByType = {};
 
   @override
+
+
   void initState() {
     super.initState();
-    fetchOptions();
+    context.read<HomeCubit>().getOptions();
   }
-
-  Future<void> fetchOptions() async {
-    setState(() => isOptionsLoading = true);
-    try {
-      final response = await optionRepo.getOptionsResponse();
-
-      setState(() => optionsByType = response);
-
-    } catch (e) {
-      log('❌ Failed to load options: $e');
-    } finally {
-      setState(() => isOptionsLoading = false);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          leading: GestureDetector(
-            onTap: () => Navigator.pop(context),
-            child: Icon(Icons.arrow_back, color: ColorPalette.primaryColor),
-          ),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.fromLTRB(15, 0, 15, 50),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SpicySlider(
-                  img: widget.productImage,
-                  value: spicyValue,
-                  onChanged: (v) {
-                    setState(() => spicyValue = v);
-                  },
-                ),
-                Gap(20),
+    return BlocConsumer<HomeCubit,HomeStates>(
 
-                // ✅ Loop ديناميكي لكل نوع
-                if (isOptionsLoading)
-                  const Center(child: CupertinoActivityIndicator())
-                else
-                  ...optionsByType.entries.map((entry) {
-                    final typeName = entry.key; // مثلا "toppings" أو "side_options"
-                    final list = entry.value;
+      listener:(context,state) {
+        if(state is AddToCartSuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Add to Cart Success')));
+        }
 
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Gap(20),
-                        CustomText(
-                          text: typeName.replaceAll('_', ' ').toUpperCase(),
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        Gap(10),
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children: list.map((option) {
-                              return Padding(
-                                padding: const EdgeInsets.only(right: 12),
-                                child: ProductOptionCart(
-                                  image: option.image,
-                                  title: option.name,
-                                  colorIcn: Colors.white,
-                                  boxDecoration: Colors.grey,
-                                  onAdd: () {
-                                    // action
-                                  },
-                                ),
-                              );
-                            }).toList(),
-                          ),
-                        ),
-                      ],
-                    );
-                  }),
+          if(state is AddToCartError){
+            ScaffoldMessenger.of(context).showSnackBar(
+                customSnack(state.message));
 
-                Gap(200),
-              ],
+
+        }
+      },
+      //conditions//
+      builder: (context,state){
+        final cubit=context.read<HomeCubit>();
+        final loading = state is OptionsLoading;
+        log('✅✅ options ${cubit.options.toString()}');
+
+        return SafeArea(
+          child: Scaffold(
+            backgroundColor: Colors.white,
+            appBar: AppBar(
+              backgroundColor: Colors.white,
+              leading: GestureDetector(
+                onTap: () => Navigator.pop(context),
+                child: Icon(Icons.arrow_back, color: ColorPalette.primaryColor),
+              ),
             ),
-          ),
-        ),
-        bottomSheet: Container(
-          height: 100,
-          decoration: BoxDecoration(
-
-
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
-            ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
+            body: Padding(
+              padding: const EdgeInsets.fromLTRB(15, 0, 15, 50),
+              child: SingleChildScrollView(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const CustomText(
-                      text: 'Burger Price :',
-                      fontSize: 15,
-                      color: Colors.white,
+                    //--SpicySlider---//
+                    SpicySlider(
+                      img: widget.productImage,
+                      value: spicyValue,
+                      onChanged: (v) {
+                        setState(() => spicyValue = v);
+                      },
                     ),
-                    CustomText(
-                      text: "\$${widget.productPrice}",
-                      fontSize: 18,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                    ),
+                    Gap(20),
+
+                    // ✅ Loop ديناميكي لكل نوع
+
+                      ProductOptionsList(
+                        isLoading: loading,
+                        optionsByType: cubit.options,
+                      ),
+
+                    Gap(200),
                   ],
                 ),
-                CustomButton(
-                  widget: isLoading
-                      ? const CupertinoActivityIndicator(color: Colors.white)
-                      : const Icon(CupertinoIcons.cart_badge_plus),
-                  gap: 10,
-                  height: 48,
-                  color: Colors.white,
-                  textColor: ColorPalette.primaryColor,
-                  text: 'Add To Cart',
-                  onTap: () async {
-                    setState(() => isLoading = true);
-                    try {
-                      final cartItem = CartModel(
-                        productId: widget.productId,
-                        quantity: 1,
-                        spicy: spicyValue,
-                        optionTypeId: selectedOption?.typeId,
-                        optionId: selectedOption?.id,
-                      );
-                      await cartRepo.addToCart(CartRequestModel(items: [cartItem]));
-                      if (!context.mounted) return;
+              ),
+            ),
+            //----------bottomSheet------//
+            bottomSheet: ProductBottomSheet(
+              productPrice: widget.productPrice,
+              isLoading: state is AddToCartLoading,
+                onTap: () {
+          final cartItem = CartModel(
+          productId: widget.productId,
+          quantity: 1,
+          spicy: spicyValue,
+          optionTypeId: null,
+          optionId: null,
+          );
 
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Add to cart successfully')),
+          cubit.addToCart(
+          cartData: CartRequestModel(
+          items: [cartItem],
+          ),
+          );
+          },
 
-                      );
-                    } catch (e) {
-                      log('❌ Add to cart error: $e');
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Error in add to cart')),
-                      );
-                    } finally {
-                      setState(() => isLoading = false);
-                    }
-                  },
-                ),
-              ],
             ),
           ),
-        ),
-      ),
+        );
+      },
+      //return
+
     );
   }
 }

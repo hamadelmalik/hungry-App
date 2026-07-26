@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:hungry/core/constants/api_constants.dart';
 import 'package:hungry/core/constants/color_palette.dart';
 import 'package:hungry/shared/custom_btn.dart';
 import 'package:hungry/shared/custom_text.dart';
@@ -76,8 +77,7 @@ class CustomCartItemNew extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Image.network(
-                  "http://192.168.1.19:8000/storage/$image",
-                  width:90,
+                  "${ApiConstants.storageUrl}/uploadimages/$image",                  width:90,
                   height: 90,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stack) {

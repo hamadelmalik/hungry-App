@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:hungry/core/constants/api_constants.dart';
 import 'package:hungry/core/constants/color_palette.dart';
 import 'package:hungry/shared/custom_btn.dart';
 import 'package:hungry/shared/custom_text.dart';
@@ -38,8 +39,7 @@ class CustomCartItem extends StatelessWidget {
             Row(
               children: [
                 Image.network(
-                  'http://192.168.1.19:8000/storage/uploadimages/$image',
-                  width: 70,
+                  '${ApiConstants.storageUrl}/uploadimages/$image',                  width: 70,
                   height: 70,
                   fit: BoxFit.cover,
                 ),
