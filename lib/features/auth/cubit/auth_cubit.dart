@@ -5,86 +5,109 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hungry/core/network/api_error.dart';
 import 'package:hungry/features/auth/cubit/auth_state.dart';
 import 'package:hungry/features/auth/data/user_model.dart';
-import 'package:hungry/features/auth/repo/auth_repo.dart';
+import 'package:hungry/features/auth/repo/Auth/auth_repo.dart';
 
-class AuthCubit extends Cubit<AuthStates>{
-  AuthCubit():super(AuthInitial());
+class AuthCubit extends Cubit<AuthStates> {
+  final AuthRepo authRepo;
+  AuthCubit({required this.authRepo}) : super(AuthInitial());
 
-//login function
+  //login function
 
-final AuthRepo authRepo=AuthRepo();
-//login screen controller
- final  emailController = TextEditingController(text:'hamad@gmail.com');
-  final    passwordController = TextEditingController(text: '12345678');
-  //profile  screen controller
 
-  // final TextEditingController _name = TextEditingController();
-  // final TextEditingController _email = TextEditingController();
-  // final TextEditingController _address = TextEditingController();
-  // final TextEditingController _visa = TextEditingController();
-  final formKey = GlobalKey<FormState>();
+  // final AuthRepo authRepo = AuthRepo();//login screen controller
+  final emailController = TextEditingController(text: 'hamad@gmail.com');
+  final passwordController = TextEditingController(text: '12345678');
+
   UserModel? userModel;
+  bool isGuest = false;
 
+  //--------register controller
+  final TextEditingController regNameController = TextEditingController();
+  final TextEditingController regEmailController = TextEditingController();
+  final TextEditingController regPassController = TextEditingController();
+  final TextEditingController reConfirmPassController = TextEditingController();
+
+  //-------login
   Future<void> login({
     required String email,
     required String password,
   }) async {
-    emit(AuthLoading());
+    try {
+      log("🔥 LOGIN START");
+
+      emit(LoginLoading());
+
+      userModel = await authRepo.login(email, password);
+      log("🔥🔥🔥🔥USER NAME: ${userModel?.name}");
+      log("🔥🔥🔥USER IMAGE: ${userModel?.image}");
+
+      // المستخدم سجل دخول بنجاح، إذن ليس Guest
+      isGuest = false;
+
+      emit(LoginSuccess());
+    } catch (e) {
+      final errorMessage = e is ApiError
+          ? e.message
+          : "Something went wrong";
+
+      emit(LoginError(errorMessage));
+    }
+  }
+  //signup------------
+
+  Future<void> signup() async {
+    emit(SignUpLoading());
 
     try {
-      await authRepo.login(email, password);
-
-      await getProfileData(); // جلب بيانات المستخدم والصورة
-
-      emit(AuthSuccess());
-
+      userModel = await authRepo.signup(
+        regNameController.text.trim(),
+        regEmailController.text.trim(),
+        regPassController.text.trim(),
+      );
+isGuest=false;
+      emit(SignUpSuccess());
     } catch (e) {
-      String errorMessage = "Something went wrong";
+      emit(SignUpError(e is ApiError ? e.message : "Error in Register"));
+    }
+  }
+
+  //logout ----------
+
+  Future<void> logout() async {
+    isGuest=false;
+    emit(LogoutLoading());
+
+    try {
+      await authRepo.logout();
+isGuest=true;
+      emit(LogoutSuccess());
+    } catch (e) {
+      String errorMessage = 'Something went wrong';
 
       if (e is ApiError) {
         errorMessage = e.message;
       }
 
-      emit(AuthError(errorMessage));
+      emit(LogoutError(errorMessage));
     }
   }
-//getProfileData
-  Future<void> getProfileData() async {
+//Auto login
+
+  Future<void> autoLogin() async {
+    emit(AutoLoginLoading());
+
     try {
-      userModel = await authRepo.getProfileData();
+      await authRepo.autoLogin();
 
-      log("✅✅✅✅✅✅USER IMAGE: ${userModel?.image}");
-      log("✅✅✅✅✅✅USER name: ${userModel?.name}");
-      log("✅✅✅✅✅✅USER email: ${userModel?.email}");
-
-
-      emit(AuthSuccess());
+      emit(AutoLoginSuccess());
     } catch (e) {
-      String errorMessage = "Something went wrong";
+      String errorMessage = 'Something went wrong';
 
       if (e is ApiError) {
         errorMessage = e.message;
       }
 
-      emit(AuthError(errorMessage));
+      emit(AutoLoginError(errorMessage));
     }
   }
-//updateProfileData
-Future updateProfileData({required String  name, required String  email,required String  address  ,String? visa,
-  String? imagePath})async{
-
-  userModel=await authRepo.updateProfileData(name: name,  email:email,  address:address ,visa: visa,imagePath: imagePath);
-  try{
-    emit(AuthSuccess());
-
-  }catch (e){
-    String errorMessage = "Something went wrong";
-    if( e is ApiError){
-      errorMessage=e.message;
-    }
-    emit(AuthError(errorMessage));
-  }
-
 }
-  }
-

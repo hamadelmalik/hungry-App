@@ -18,7 +18,16 @@ class ApiServices {
 
   Future<dynamic> post(String endPoint, dynamic body) async {
     try {
-      final response = await dioClint.dio.post(endPoint, data: body);
+      final response = await dioClint.dio.post(
+          endPoint,
+          data: body,
+        options: body is FormData
+      ? Options(
+      contentType: 'multipart/form-data',
+      )
+        : null,
+
+      );
       if(response.data is String){
         return response.data;
       }

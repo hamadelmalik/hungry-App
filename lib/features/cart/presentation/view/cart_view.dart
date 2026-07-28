@@ -3,8 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:hungry/core/constants/color_palette.dart';
 import 'package:hungry/core/network/api_error.dart';
-import 'package:hungry/features/auth/repo/auth_repo.dart';
+import 'package:hungry/core/network/api_services.dart';
+import 'package:hungry/features/auth/repo/Auth/auth_repo.dart';
 import 'package:hungry/features/auth/data/user_model.dart';
+import 'package:hungry/features/auth/repo/profile/profile_repo.dart';
 import 'package:hungry/features/auth/view/widget/guest_mode.dart';
 
 import 'package:hungry/features/cart/presentation/cubit/cart_cubit.dart';
@@ -26,12 +28,22 @@ class CartView extends StatefulWidget {
 class _CartViewState extends State<CartView> {
 
   bool isGuest=false;
-  final AuthRepo authRepo = AuthRepo();
+  final apiServices = ApiServices();
+
+  late final profileRepo = ProfileRepo(
+    apiServices: apiServices,
+  );
+
+  late final authRepo = AuthRepo(
+    apiServices: apiServices,
+    profileRepo: profileRepo,
+  );
+
+
   UserModel? userModel;
   Future<void> getProfileData() async {
     try {
-      final user = await authRepo.getProfileData();
-      if (!mounted) return;
+      final user = await profileRepo.getProfileData();      if (!mounted) return;
       setState(() {
         userModel = user;
       });
@@ -177,4 +189,5 @@ class _CartViewState extends State<CartView> {
           );
         },
       );
+
     }}

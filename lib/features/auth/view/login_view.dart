@@ -14,7 +14,8 @@ import 'package:hungry/shared/custom_text_filed.dart';
 
 
 class LoginView extends StatelessWidget {
-  const LoginView({super.key});
+   LoginView({super.key});
+  final formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +24,8 @@ class LoginView extends StatelessWidget {
     return BlocListener<AuthCubit,AuthStates>(
         listener: (context,state){
 
-          if(state is AuthSuccess){
+
+          if(state is LoginSuccess){
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
@@ -32,7 +34,7 @@ class LoginView extends StatelessWidget {
             );
 
           }
-          if(state is AuthError){
+          if(state is LoginError){
             ScaffoldMessenger.of(context).showSnackBar(
                 customSnack(state.message));
           }
@@ -44,7 +46,7 @@ class LoginView extends StatelessWidget {
           child: Scaffold(
              backgroundColor: ColorPalette.primaryColor,
             body: Form(
-              key: context.read<AuthCubit>().formKey,
+              key: formKey,
               child: Column(
                 children: [
                   Gap(20),
@@ -84,18 +86,20 @@ class LoginView extends StatelessWidget {
                         //  isLoading?CupertinoActivityIndicator(color: ColorPalette.primaryColor,):
                           BlocBuilder<AuthCubit,AuthStates>(
                             builder: (context,state){
-                              final loading = state is AuthLoading;
+                              final authCubit= context.read<AuthCubit>();
+                              final loading = state is LoginLoading;
                               return CustomAuthBottom(
                                 text: 'Login',
                                 height: 60,
                                 width: double.infinity,
-                                background: ColorPalette.primaryColor,
+                                color: ColorPalette.primaryColor,
                                 textColor: Colors.white,
                                 fontSize: 20,
                                 isLoading: loading,
                                 onTap: (){
-                                  if (!context.read<AuthCubit>().formKey.currentState!.validate()) return;
-                                  context.read<AuthCubit>().login(email: context.read<AuthCubit>().emailController.text.trim(), password: context.read<AuthCubit>().passwordController.text.trim());
+
+                                  if(!formKey.currentState!.validate()) return;
+                                  authCubit.login(email: context.read<AuthCubit>().emailController.text.trim(), password: context.read<AuthCubit>().passwordController.text.trim());
                                 },
                               );
                             },

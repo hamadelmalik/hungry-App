@@ -1,10 +1,14 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
 import 'package:hungry/core/constants/assets_app.dart';
 import 'package:hungry/core/constants/color_palette.dart';
+import 'package:hungry/core/network/api_services.dart';
 import 'package:hungry/core/route/route_view.dart';
-import 'package:hungry/features/auth/repo/auth_repo.dart';
+import 'package:hungry/features/auth/repo/Auth/auth_repo.dart';
+import 'package:hungry/features/auth/repo/profile/profile_repo.dart';
 import 'package:hungry/features/auth/view/login_view.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -18,10 +22,19 @@ class _SplashScreenState extends State<SplashScreen> {
   double _opacity = 0.0;
 
 
-  AuthRepo authRepo = AuthRepo();
+  final apiServices = ApiServices();
+
+  late final profileRepo = ProfileRepo(
+    apiServices: apiServices,
+  );
+
+  late final authRepo = AuthRepo(
+    apiServices: apiServices,
+    profileRepo: profileRepo,
+  );
 
   Future<void> _checkLogin() async {
-    print('start checkkkkkkkkkkkkkk');
+    log('start check Login');
     try {
       final user = await authRepo.autoLogin();
       if (!mounted) return;
@@ -47,7 +60,7 @@ class _SplashScreenState extends State<SplashScreen> {
       if (mounted) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => const LoginView()),
+          MaterialPageRoute(builder: (_) =>  LoginView()),
         );
       }
     }

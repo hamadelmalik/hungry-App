@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:hungry/core/network/api_services.dart';
 import 'package:hungry/core/route/route_view.dart';
-import 'package:hungry/features/auth/repo/auth_repo.dart';
+import 'package:hungry/features/auth/repo/Auth/auth_repo.dart';
+import 'package:hungry/features/auth/repo/profile/profile_repo.dart';
 import 'package:hungry/features/auth/view/login_view.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -13,7 +15,16 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
-  AuthRepo authRepo = AuthRepo();
+  final apiServices = ApiServices();
+
+  late final profileRepo = ProfileRepo(
+    apiServices: apiServices,
+  );
+
+  late final authRepo = AuthRepo(
+    apiServices: apiServices,
+    profileRepo: profileRepo,
+  );
 
   late final AnimationController _controller;
   late final Animation<double> _fadeAnimation;
@@ -50,6 +61,7 @@ class _SplashScreenState extends State<SplashScreen>
       final user = await authRepo.autoLogin();
 
      // if (!mounted) return;
+      if (!mounted) return;
 
       if (authRepo.isLoggedIn || authRepo.isGuest) {
         Navigator.pushReplacement(
@@ -66,7 +78,7 @@ class _SplashScreenState extends State<SplashScreen>
       if (mounted) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => const LoginView()),
+          MaterialPageRoute(builder: (_) =>  LoginView()),
         );
       }
     }

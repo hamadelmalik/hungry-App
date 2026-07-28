@@ -3,15 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'custom_text.dart';
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
-import 'custom_text.dart';
+
 
 SnackBar customSnack(
     String errorMsg, {
-      Color? color,
-      IconData? iconData,// اللون اختياري
+      Color? color,//color selected
+      IconData? iconData,
     }) {
   return SnackBar(
     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),

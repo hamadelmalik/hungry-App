@@ -62,7 +62,7 @@ class _CheckoutViewState extends State<CheckoutView> {
           productId: item.productId,
           quantity: item.quantity,
           spicy: item.spicy,
-          optionsByType: (item.optionsByType ?? {}).map(
+          optionsByType: (item.optionsByType ).map(
                 (key, value) => MapEntry(
               key,
               value.map((e) => e).toList(),
@@ -139,8 +139,7 @@ class _CheckoutViewState extends State<CheckoutView> {
                   CustomBtn(
                     heightSize: 50,
                     widthSize: 220,
-                    backgroundColor: ColorPalette.primaryColor.withOpacity(0.2),
-                    onTap: () {
+                    backgroundColor: ColorPalette.primaryColor.withValues(alpha: 0.2),                    onTap: () {
                       Navigator.pop(context); // close dialog
                       Navigator.pop(context); // return to previous screen
                     },
