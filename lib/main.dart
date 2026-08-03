@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hungry/core/di/dependency_injection.dart';
+import 'package:hungry/core/route/cubit/menu_cubit.dart';
+import 'package:hungry/core/route/route_view.dart';
 import 'package:hungry/features/auth/cubit/auth_cubit.dart';
 import 'package:hungry/features/auth/cubit/profile_cubit.dart';
 import 'package:hungry/features/auth/view/login_view.dart';
+import 'package:hungry/features/auth/view/profile_view.dart';
 import 'package:hungry/features/cart/data/repo/cart_repo.dart';
 import 'package:hungry/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:hungry/features/home/cubit/home_cubit.dart';
@@ -22,10 +25,16 @@ class MyApp extends StatelessWidget {
 
         providers: [
        BlocProvider(create: (_) => AuthCubit( authRepo: authRepo,),),
-          BlocProvider(create: (_) => ProfileCubit(profileRepo),),
+          BlocProvider(create: (_) => ProfileCubit(profileRepo)..getProfileData(),
+            child: const ProfileView(),
+          ),
        BlocProvider(create: (_) => HomeCubit()..getProducts(),),
           //----------cart provider---------
        BlocProvider( create: (_) => CartCubit(CartRepo()..getCartData()),),
+          BlocProvider(
+            create: (_) => MenuCubit()..getMenuItems(),
+            child: const PageRouteView(),
+          )
 ],
     child: MaterialApp(
         debugShowCheckedModeBanner: false,

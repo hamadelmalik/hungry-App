@@ -9,10 +9,10 @@ import 'package:hungry/features/auth/repo/Auth/auth_repo.dart';
 
 class AuthCubit extends Cubit<AuthStates> {
   final AuthRepo authRepo;
+
   AuthCubit({required this.authRepo}) : super(AuthInitial());
 
   //login function
-
 
   // final AuthRepo authRepo = AuthRepo();//login screen controller
   final emailController = TextEditingController(text: 'hamad@gmail.com');
@@ -28,31 +28,25 @@ class AuthCubit extends Cubit<AuthStates> {
   final TextEditingController reConfirmPassController = TextEditingController();
 
   //-------login
-  Future<void> login({
-    required String email,
-    required String password,
-  }) async {
+  Future<void> login({required String email, required String password}) async {
     try {
       log("🔥 LOGIN START");
 
       emit(LoginLoading());
 
       userModel = await authRepo.login(email, password);
-      log("🔥🔥🔥🔥USER NAME: ${userModel?.name}");
-      log("🔥🔥🔥USER IMAGE: ${userModel?.image}");
 
       // المستخدم سجل دخول بنجاح، إذن ليس Guest
       isGuest = false;
 
       emit(LoginSuccess());
     } catch (e) {
-      final errorMessage = e is ApiError
-          ? e.message
-          : "Something went wrong";
+      final errorMessage = e is ApiError ? e.message : "Something went wrong";
 
       emit(LoginError(errorMessage));
     }
   }
+
   //signup------------
 
   Future<void> signup() async {
@@ -64,7 +58,7 @@ class AuthCubit extends Cubit<AuthStates> {
         regEmailController.text.trim(),
         regPassController.text.trim(),
       );
-isGuest=false;
+      isGuest = false;
       emit(SignUpSuccess());
     } catch (e) {
       emit(SignUpError(e is ApiError ? e.message : "Error in Register"));
@@ -74,12 +68,12 @@ isGuest=false;
   //logout ----------
 
   Future<void> logout() async {
-    isGuest=false;
+    // isGuest=false;
     emit(LogoutLoading());
 
     try {
       await authRepo.logout();
-isGuest=true;
+      isGuest = true;
       emit(LogoutSuccess());
     } catch (e) {
       String errorMessage = 'Something went wrong';
@@ -91,7 +85,8 @@ isGuest=true;
       emit(LogoutError(errorMessage));
     }
   }
-//Auto login
+
+  //Auto login
 
   Future<void> autoLogin() async {
     emit(AutoLoginLoading());

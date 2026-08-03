@@ -9,7 +9,7 @@ import 'package:hungry/features/home/cubit/home_state.dart';
 import 'package:hungry/features/home/view/spicy_slider.dart';
 import 'package:hungry/features/home/view/widget/product_bottom_sheet.dart';
 import 'package:hungry/features/home/view/widget/product_options_list.dart';
-import 'package:hungry/shared/custom_snak.dart';
+import 'package:hungry/shared/custom_snack.dart';
 
 class ProductDetailsView extends StatefulWidget {
   final String productImage, productPrice;

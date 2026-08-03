@@ -151,7 +151,7 @@ class AuthRepo {
       await PrefHelper.clearToken();
 
       _currentUser = null;
-      isGuest = false;
+      isGuest = true;
 
       log("✅ Logout success");
     } on DioException catch (e) {

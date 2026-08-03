@@ -8,7 +8,7 @@ import 'package:hungry/features/auth/cubit/auth_cubit.dart';
 import 'package:hungry/features/auth/cubit/auth_state.dart';
 import 'package:hungry/features/auth/view/login_view.dart';
 import 'package:hungry/features/auth/view/widget/custom_bottom.dart';
-import 'package:hungry/shared/custom_snak.dart';
+import 'package:hungry/shared/custom_snack.dart';
 import 'package:hungry/shared/custom_text.dart';
 import 'package:hungry/shared/custom_text_filed.dart';
 

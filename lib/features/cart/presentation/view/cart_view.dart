@@ -16,7 +16,7 @@ import 'package:hungry/features/cart/presentation/view/widget/cart_item.dart';
 import 'package:hungry/features/order/data/model/order_item_model.dart';
 import 'package:hungry/features/order/view/checkout_view.dart';
 import 'package:hungry/shared/custom_btn.dart';
-import 'package:hungry/shared/custom_snak.dart';
+import 'package:hungry/shared/custom_snack.dart';
 import 'package:hungry/shared/custom_text.dart';
 class CartView extends StatefulWidget {
   const CartView({super.key});
