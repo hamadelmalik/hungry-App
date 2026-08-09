@@ -59,9 +59,11 @@ class _CheckoutViewState extends State<CheckoutView> {
     try {
       final items = widget.cartItems.map((item) {
         return OrderItemModel(
+
           productId: item.productId,
           quantity: item.quantity,
           spicy: item.spicy,
+          totalPrice: item.totalPrice,
           optionsByType: (item.optionsByType ).map(
                 (key, value) => MapEntry(
               key,
@@ -73,7 +75,14 @@ class _CheckoutViewState extends State<CheckoutView> {
 
       final order = OrderModel(
         items: items,
+
         total: double.parse(widget.totalPrice),
+
+        taxes: 0.3,
+
+        deliveryFees: 0.2,
+
+        paymentMethod: selectedMethod,
       );
 
       log("ORDER JSON BEFORE SEND: ${order.toJson()}");
@@ -105,60 +114,71 @@ class _CheckoutViewState extends State<CheckoutView> {
       builder: (context) {
         return Dialog(
           backgroundColor: Colors.transparent,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 100),
-            child: Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircleAvatar(
-                    radius: 40,
-                    backgroundColor: ColorPalette.primaryColor,
-                    child: const Icon(Icons.check, size: 50, color: Colors.white),
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
+
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+
+                CircleAvatar(
+                  radius: 40,
+                  backgroundColor: ColorPalette.primaryColor,
+                  child: const Icon(
+                    Icons.check,
+                    size: 50,
+                    color: Colors.white,
                   ),
-                  const Gap(10),
-                  CustomText(
-                    text: 'Success !',
-                    fontWeight: FontWeight.bold,
-                    fontSize: 30,
-                    color: ColorPalette.primaryColor,
-                  ),
-                  const Gap(10),
-                  const CustomText(
-                    text: 'Your payment was successful.\nA receipt for this purchase\nhas been sent to your email.',
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                    color: Color(0xFFBCBBBB),
-                  ),
-                  const Gap(30),
-                  CustomBtn(
-                    heightSize: 50,
-                    widthSize: 220,
-                    backgroundColor: ColorPalette.primaryColor.withValues(alpha: 0.2),                    onTap: () {
-                      Navigator.pop(context); // close dialog
-                      Navigator.pop(context); // return to previous screen
-                    },
-                    child: CustomText(
-                      text: 'Close',
-                      color: ColorPalette.primaryColor,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+
+                const Gap(10),
+
+                CustomText(
+                  text: 'Success !',
+                  fontWeight: FontWeight.bold,
+                  fontSize: 30,
+                  color: ColorPalette.primaryColor,
+                ),
+
+                const Gap(10),
+
+                const CustomText(
+                  text:
+                  'Your payment was successful.\n'
+                      'A receipt for this purchase\n'
+                      'has been sent to your email.',
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                  color: Color(0xFFBCBBBB),
+                ),
+
+                const Gap(30),
+
+                CustomBtn(
+                  heightSize: 50,
+                  widthSize: 220,
+                  backgroundColor:
+                  ColorPalette.primaryColor.withValues(alpha: 0.2),
+
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                  },
+
+                  text: 'Close',
+                ),
+              ],
             ),
           ),
         );
       },
     );
   }
-
   @override
   Widget build(BuildContext context) {
     final total = (double.parse(widget.totalPrice) + 0.3 + 0.2).toStringAsFixed(2);

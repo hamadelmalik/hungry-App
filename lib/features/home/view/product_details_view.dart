@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:hungry/core/constants/color_palette.dart';
-import 'package:hungry/features/cart/data/model/cart_model.dart';
+import 'package:hungry/features/cart/data/model/cart_item_model.dart';
 import 'package:hungry/features/home/cubit/home_cubit.dart';
 import 'package:hungry/features/home/cubit/home_state.dart';
+import 'package:hungry/features/home/data/model/option_model.dart';
 import 'package:hungry/features/home/view/spicy_slider.dart';
 import 'package:hungry/features/home/view/widget/product_bottom_sheet.dart';
 import 'package:hungry/features/home/view/widget/product_options_list.dart';
@@ -28,35 +29,33 @@ class ProductDetailsView extends StatefulWidget {
 
 class _ProductDetailsViewState extends State<ProductDetailsView> {
   double spicyValue = 0.5;
-
+  OptionModel? selectedOption;
 
   @override
-
-
   void initState() {
     super.initState();
     context.read<HomeCubit>().getOptions();
   }
+
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<HomeCubit,HomeStates>(
-
-      listener:(context,state) {
-        if(state is AddToCartSuccess) {
-          ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Add to Cart Success')));
+    return BlocConsumer<HomeCubit, HomeStates>(
+      listener: (context, state) {
+        if (state is AddToCartSuccess) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Add to Cart Success')));
         }
 
-          if(state is AddToCartError){
-            ScaffoldMessenger.of(context).showSnackBar(
-                customSnack(state.message));
-
-
+        if (state is AddToCartError) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(customSnack(state.message));
         }
       },
       //conditions//
-      builder: (context,state){
-        final cubit=context.read<HomeCubit>();
+      builder: (context, state) {
+        final cubit = context.read<HomeCubit>();
         final loading = state is OptionsLoading;
         log('✅✅ options ${cubit.options.toString()}');
 
@@ -87,11 +86,10 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
                     Gap(20),
 
                     // ✅ Loop ديناميكي لكل نوع
-
-                      ProductOptionsList(
-                        isLoading: loading,
-                        optionsByType: cubit.options,
-                      ),
+                    ProductOptionsList(
+                      isLoading: loading,
+                      optionsByType: cubit.options,
+                    ),
 
                     Gap(200),
                   ],
@@ -103,27 +101,33 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
               productPrice: widget.productPrice,
               isLoading: state is AddToCartLoading,
                 onTap: () {
-          final cartItem = CartModel(
-          productId: widget.productId,
-          quantity: 1,
-          spicy: spicyValue,
-          optionTypeId: null,
-          optionId: null,
-          );
+                  final cubit = context.read<HomeCubit>();
 
-          cubit.addToCart(
-          cartData: CartRequestModel(
-          items: [cartItem],
-          ),
-          );
-          },
+                  final double basePrice = double.tryParse(widget.productPrice) ?? 0;
+                  final double optionPrice = selectedOption?.price ?? 0;
+
+                  final cartItem = CartItemModel(
+                    itemId: 0,
+                    productId: widget.productId,
+                    name: "",
+                    image: "",
+                    quantity: 1,
+                    spicy: spicyValue,
+                   // optionsByType: selectedOption?.typeId,
+                   // : selectedOption?.id,
+                   // optionPrice: optionPrice,
+                    totalPrice: basePrice + optionPrice,
+                  );
+
+                  cubit.addToCart(cartData: cartItem);
+                },
 
             ),
           ),
         );
       },
-      //return
 
+      //return
     );
   }
 }

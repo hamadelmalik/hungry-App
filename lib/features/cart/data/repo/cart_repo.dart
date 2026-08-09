@@ -1,52 +1,53 @@
-import 'dart:developer';
-import 'package:hungry/core/network/api_error.dart';
 import 'package:hungry/core/network/api_services.dart';
+import 'package:hungry/core/network/api_error.dart';
 import 'package:hungry/features/cart/data/model/cart_model.dart';
 
 class CartRepo {
-  ApiServices apiServices = ApiServices();
+  final ApiServices apiServices = ApiServices();
 
+  // جلب بيانات السلة
+  Future<CartModel> getCartData() async {
+    final response = await apiServices.get('/cart');
+    return CartModel.fromJson(response);
+  }
 
-
-
-  //----------getCartResponse-------------------
-  Future<GetCartResponseModel> getCartData() async {
+  // إضافة منتج للسلة
+  Future<bool> addToCart(Map<String, dynamic> body) async {
     try {
-      final res = await apiServices.get('/cart');
-
-      log("🔍 CART RESPONSE FULL: $res");
-
-      return GetCartResponseModel.fromJson(res);
+      await apiServices.post('/cart/add', body);
+      return true;
     } catch (e) {
-      log("❌ CART ERROR: $e");
-      throw ApiError(message: e.toString());
+      throw ApiError(message: 'Failed to add to cart');
     }
   }
 
-  ///------------ remove cart--------------
-  Future<void> removeCartItem(int id) async {
+  // تحديث كمية منتج
+  Future<bool> updateCartItem(int itemId, int quantity) async {
     try {
-      final res = await apiServices.delete('/cart/remove/$id' );
-      log("🔍🔍🔍🔍🔍🔍🔍 CART remove : $res");
-      if (res['code'] == 200 && res['data'] == null) {
-        throw ApiError(message: 'Cart Deleted  Successfully');
-      }
+      await apiServices.put('/cart/update/$itemId', {"quantity": quantity});
+      return true;
     } catch (e) {
-      throw ApiError(message: e.toString());
+      throw ApiError(message: 'Failed to update cart item');
     }
   }
-  //clear cart items
 
+  // حذف منتج من السلة
+  Future<bool> removeCartItem(int itemId) async {
+    try {
+      await apiServices.delete('/cart/remove/$itemId');
+      return true;
+    } catch (e) {
+      throw ApiError(message: 'Failed to remove cart item');
+    }
+  }
+
+  // تفريغ السلة بالكامل
   Future<bool> clearCart() async {
     try {
-      final response = await apiServices.delete('/cart/clear');
-
-      return response['code'] == 200;
+      await apiServices.delete('/cart/clear');
+      return true;
     } catch (e) {
-      log("❌ CLEAR CART ERROR: $e");
-      return false;
+      throw ApiError(message: 'Failed to clear cart');
     }
   }
 }
-
-

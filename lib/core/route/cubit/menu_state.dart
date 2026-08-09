@@ -13,3 +13,8 @@ class  MenuError extends MenuStates{
   final String message;
   MenuError(this.message);
 }
+class MenuPageChanged extends MenuStates {
+  final List<MenuItemModel> menuItems;
+
+  MenuPageChanged(this.menuItems);
+}

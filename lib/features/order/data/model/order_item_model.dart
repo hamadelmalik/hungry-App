@@ -1,49 +1,37 @@
-import 'dart:developer';
-
-import 'package:hungry/features/home/data/model/option_model.dart';
-
 class OrderItemModel {
   final int productId;
   final int quantity;
-  final double? spicy; // مستوى التوابل
-  final Map<String, List<OptionModel>> optionsByType;
+  final double spicy;
+  final double totalPrice;
+
+  // الإضافات (خريطة من نوع Map<String, List<dynamic>>)
+  final Map<String, List<dynamic>> optionsByType;
 
   OrderItemModel({
     required this.productId,
     required this.quantity,
-    this.spicy,
+    required this.spicy,
+    required this.totalPrice,
     required this.optionsByType,
   });
 
-  // From  JSON
   factory OrderItemModel.fromJson(Map<String, dynamic> json) {
-    final Map<String, List<OptionModel>> optionsMap = {};
-    (json['options_by_type'] as Map<String, dynamic>? ?? {}).forEach((key, value) {
-      optionsMap[key] = (value as List<dynamic>)
-          .map((e) => OptionModel.fromJson(e))
-          .toList();
-    });
-
     return OrderItemModel(
-      productId: json['product_id'],
-      quantity: json['quantity'],
-      spicy: double.tryParse(json['spicy'].toString()) ?? 0.0,
-      optionsByType: optionsMap,
+      productId: json["product_id"],
+      quantity: json["quantity"],
+      spicy: double.tryParse(json["spicy"].toString()) ?? 0.0,
+      totalPrice: double.tryParse(json["total_price"].toString()) ?? 0.0,
+      optionsByType: Map<String, List<dynamic>>.from(json["options_by_type"] ?? {}),
     );
   }
 
-  // To  JSON
   Map<String, dynamic> toJson() {
     return {
       "product_id": productId,
       "quantity": quantity,
       "spicy": spicy,
-      "options_by_type": optionsByType.map(
-            (key, value) => MapEntry(
-          key,
-          value.map((option) => option.toJson()).toList(),
-        ),
-      ),
+      "total_price": totalPrice,
+      "options_by_type": optionsByType,
     };
   }
 }

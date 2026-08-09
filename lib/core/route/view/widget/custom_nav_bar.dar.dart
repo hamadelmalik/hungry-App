@@ -5,7 +5,7 @@ import 'package:hungry/core/route/data/menu_items_model.dart';
 
 class CustomNavBar extends StatelessWidget {
   final int currentIndex;
-  final Function(int) onTap;
+  final void Function(int, String) onTap;
   final List<MenuItemModel> menuItems;
 
   const CustomNavBar({
@@ -57,7 +57,10 @@ class CustomNavBar extends StatelessWidget {
 
     return Expanded(
       child: GestureDetector(
-        onTap: () => onTap(index),
+        onTap: () => onTap(
+          index,
+          menuItems[index].route,
+        ),
         child: Center(
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 300),

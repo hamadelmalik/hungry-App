@@ -9,10 +9,8 @@ class CartCubit extends Cubit<CartStates> {
 
   CartCubit(this.cartRepo) : super(CartInitial());
 
-  //--------------get cart
-  GetCartResponseModel? cartResponse;
-  List<int>? quantity=[];
-  //int? cartItemId;
+  CartModel? cartResponse;
+  List<int>? quantity = [];
 
   Future<void> getCartData() async {
     emit(GetCartLoading());
@@ -20,7 +18,12 @@ class CartCubit extends Cubit<CartStates> {
     try {
       final res = await cartRepo.getCartData();
       cartResponse = res;
-      quantity = List.generate(res.cartData.items.length, (_) => 1);
+
+      quantity = List.generate(
+        res.cartData.items.length,
+            (_) => 1,
+      );
+
       emit(GetCartSuccess());
     } catch (e) {
       String errorMessage = 'Failed to get cart data';
@@ -30,35 +33,31 @@ class CartCubit extends Cubit<CartStates> {
       emit(GetCartError(message: errorMessage));
     }
   }
-  //----------------------remove cart----------------------
+
   Future<void> removeCartItem(int cartItemId) async {
-    emit(RemoveCartLoading( cartItemId: cartItemId));
+    emit(RemoveCartLoading(cartItemId: cartItemId));
     try {
       await cartRepo.removeCartItem(cartItemId);
-
       await getCartData();
-
       emit(RemoveCartSuccess());
     } catch (e) {
-      String errorMessage = 'Failed to Remove  Cart Item';
+      String errorMessage = 'Failed to Remove Cart Item';
       if (e is ApiError) {
         errorMessage = e.message;
       }
       emit(RemoveCartError(message: errorMessage));
     }
   }
-//----------------------increase----------------------
-void onAdd(int index){
+
+  void onAdd(int index) {
     quantity?[index]++;
     emit(GetCartSuccess());
-}
-//------------decrease-----------------------------------
-  void onMinus(int index){
-    if(quantity![index] >1){
+  }
+
+  void onMinus(int index) {
+    if (quantity![index] > 1) {
       quantity?[index]--;
       emit(GetCartSuccess());
     }
-
   }
-
 }

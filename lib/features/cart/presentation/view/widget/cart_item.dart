@@ -35,7 +35,7 @@ class CustomCartItem extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
 
-            /// الصورة + الاسم
+            /// image +name
             Row(
               children: [
                 Image.network(
@@ -105,12 +105,7 @@ class CustomCartItem extends StatelessWidget {
                   widthSize: 110,
                   backgroundColor: ColorPalette.primaryColor,
                   onTap: onRemove,
-                  child: const CustomText(
-                    text: 'Remove',
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  text: 'Remove',
                 ),
               ],
             ),

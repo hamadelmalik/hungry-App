@@ -126,12 +126,7 @@ class CustomCartItemNew extends StatelessWidget {
               widthSize: double.infinity,
               backgroundColor: ColorPalette.primaryColor,
               onTap: onRemove,
-              child: const CustomText(
-                text: 'Remove',
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              text: 'remove',
             ),
           ],
         ),

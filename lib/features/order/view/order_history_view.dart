@@ -50,7 +50,9 @@ child: Padding(
     backgroundColor:  ColorPalette.primaryColor.withValues(alpha: 0.15),
     onTap: () {
       log('Checkout');
-    },child: CustomText(text: 'Re Order',color: ColorPalette.primaryColor,fontSize: 20,fontWeight: FontWeight.w700,),),
+    },
+    text: 're Order',
+  ),
     ],
   ),
 ),

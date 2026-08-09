@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hungry/core/network/api_error.dart';
+import 'package:hungry/features/cart/data/model/cart_item_model.dart';
 import 'package:hungry/features/cart/data/model/cart_model.dart';
 import 'package:hungry/features/home/cubit/home_state.dart';
 import 'package:hungry/features/home/data/model/option_model.dart';
@@ -80,29 +81,19 @@ class HomeCubit extends Cubit<HomeStates>{
     }
   }
   //-------AddToCart-----------------------
-Future<void>addToCart({required CartRequestModel cartData})async{
+  Future<void> addToCart({required CartItemModel cartData}) async {
     emit(AddToCartLoading());
-    try{
+    try {
       await homeRepo.addToCart(cartData);
       emit(AddToCartSuccess());
-
-    }catch (e){
-      String errorMessage='Some Thing Wrong';
-      if(e is ApiError){
-        errorMessage=e.message;
-
+    } catch (e) {
+      String errorMessage = 'Some Thing Wrong';
+      if (e is ApiError) {
+        errorMessage = e.message;
       }
       emit(AddToCartError(errorMessage));
-
-
     }
-
-
-
-}
-
-
-
+  }
 }
 
 

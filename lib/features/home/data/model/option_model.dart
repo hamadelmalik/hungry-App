@@ -2,8 +2,9 @@ class OptionModel {
   final int id;
   final String name;
   final String image;
+  final double price;
   final int typeId;
-  OptionModel({required this.id, required this.name,required this.image, required this.typeId});
+  OptionModel({required this.id, required this.name,required this.image, required this.price,required this.typeId});
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -18,6 +19,8 @@ class OptionModel {
       id: int.tryParse(json['id'].toString()) ?? 0,
       name: json['name'] ?? '',
       image: json['image'] ?? '',
+      price: double.tryParse(json['price'].toString()) ?? 0,
+
       typeId: int.tryParse(json['type_id'].toString()) ?? 0,
     );
   }

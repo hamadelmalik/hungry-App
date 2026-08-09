@@ -1,6 +1,8 @@
 import 'dart:developer';
 import 'package:hungry/core/network/api_error.dart';
 import 'package:hungry/core/network/api_services.dart';
+import 'package:hungry/features/cart/data/model/cart_data.dart';
+import 'package:hungry/features/cart/data/model/cart_item_model.dart';
 import 'package:hungry/features/cart/data/model/cart_model.dart';
 import 'package:hungry/features/home/data/model/product_model.dart';
 
@@ -24,7 +26,7 @@ class HomeRepo {
   }
 
 
-  Future<void> addToCart(CartRequestModel cartData) async {
+  Future<void> addToCart(CartItemModel cartData) async {
     try {
       final res = await apiServices.post('/cart/add', cartData.toJson());
 
