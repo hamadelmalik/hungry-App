@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:hungry/core/network/api_services.dart';
 import 'package:hungry/core/network/api_error.dart';
 import 'package:hungry/features/cart/data/model/cart_model.dart';
@@ -8,6 +10,7 @@ class CartRepo {
   // جلب بيانات السلة
   Future<CartModel> getCartData() async {
     final response = await apiServices.get('/cart');
+    log('❌❌❌❌ RAW CART RESPONSE: $response');
     return CartModel.fromJson(response);
   }
 

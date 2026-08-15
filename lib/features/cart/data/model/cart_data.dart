@@ -11,10 +11,16 @@ class CartData {
 
   factory CartData.fromJson(Map<String, dynamic> json) {
     return CartData(
-      items: (json["items"] as List<dynamic>)
-          .map((e) => CartItemModel.fromJson(e))
+      items: (json["items"] as List<dynamic>? ?? [])
+          .map((e) => CartItemModel.fromJson(
+        e as Map<String, dynamic>,
+      ))
           .toList(),
-      totalPrice: double.tryParse(json["total_price"].toString()) ?? 0.0,
+
+      totalPrice: double.tryParse(
+        json["total_price"].toString(),
+      ) ??
+          0.0,
     );
   }
 

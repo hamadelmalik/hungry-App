@@ -1,4 +1,6 @@
 
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 import 'package:hungry/core/constants/api_constants.dart';
 import 'package:hungry/core/utils/perf_helper.dart';
@@ -20,6 +22,8 @@ class DioClint{
       InterceptorsWrapper(
           onRequest: (options, handler)async {
             final token=await PrefHelper.getToken();
+            log('🔑🔑🔑🔑🔑 TOKEN: $token');
+
             if(token!= null && token.isNotEmpty && token!='guest' ){
 
               options.headers["Authorization"] = 'Bearer $token';

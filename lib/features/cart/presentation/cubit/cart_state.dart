@@ -20,3 +20,11 @@ class RemoveCartError extends CartStates{
   String message='some thing went wrong';
   RemoveCartError({required this.message});
 }
+//auto login
+
+class AutoLoginLoading extends CartStates{}
+class AutoLoginSuccess extends CartStates{}
+class AutoLoginError extends CartStates{
+  String message='some thing went wrong';
+  AutoLoginError({required this.message});
+}

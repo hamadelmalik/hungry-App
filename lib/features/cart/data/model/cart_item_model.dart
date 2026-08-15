@@ -6,9 +6,7 @@ class CartItemModel {
   final int quantity;
   final double spicy;
   final double totalPrice;
-  final Map<String, List<dynamic>>? options;
-  // الإضافات حسب النوع
-  final Map<String, List<dynamic>>? optionsByType;
+  final List<Map<String, dynamic>> options;
 
   CartItemModel({
     required this.itemId,
@@ -18,34 +16,44 @@ class CartItemModel {
     required this.quantity,
     required this.spicy,
     required this.totalPrice,
-    this.options,
-     this.optionsByType,
+    required this.options,
   });
 
   factory CartItemModel.fromJson(Map<String, dynamic> json) {
     return CartItemModel(
-      itemId: json["item_id"],
-      productId: json["product_id"],
-      name: json["name"] ?? "",
-      image: json["image"] ?? "",
-      quantity: json["quantity"] ?? 1,
-      spicy: double.tryParse(json["spicy"].toString()) ?? 0.0,
-      totalPrice: double.tryParse(json["total_price"].toString()) ?? 0.0,
-      optionsByType: Map<String, List<dynamic>>.from(json["options_by_type"] ?? {}),
-      options: Map<String, List<dynamic>>.from(json["options"] ?? {}),
+      itemId: json['item_id'] ?? 0,
+      productId: json['product_id'] ?? 0,
+      name: json['name'] ?? '',
+      image: json['image'] ?? '',
+      quantity: json['quantity'] ?? 1,
+      spicy: double.tryParse(
+        json['spicy']?.toString() ?? '0',
+      ) ??
+          0.0,
+      totalPrice: double.tryParse(
+        json['total_price']?.toString() ?? '0',
+      ) ??
+          0.0,
+      options: (json['options'] as List?)
+          ?.map(
+            (e) => Map<String, dynamic>.from(e),
+      )
+          .toList() ??
+          [],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      "item_id": itemId,
-      "product_id": productId,
-      "name": name,
-      "image": image,
-      "quantity": quantity,
-      "spicy": spicy,
-      "total_price": totalPrice,
-      "options_by_type": optionsByType,
+      'items': [
+        {
+          'product_id': productId,
+          'quantity': quantity,
+          'spicy': spicy,
+          'option_type_id': null,
+          'option_id': null,
+        },
+      ],
     };
   }
 }

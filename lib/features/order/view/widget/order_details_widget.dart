@@ -25,16 +25,35 @@ class OrderDetailsWidget extends StatelessWidget {
   }
 }
 
-Widget checkoutWidget(title,price,isBold){
-  return  Row(
+Widget checkoutWidget(
+    String title,
+    String price,
+    bool isBold,
+    ) {
+  return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
       CustomText(
-        text:title,
-        color: isBold? Colors.black: ColorPalette.textColor,fontSize: 15,fontWeight: isBold? FontWeight.bold: FontWeight.w400,),
-      CustomText( text: '$price\$',color: isBold? Colors.black: ColorPalette.textColor,fontSize: 15,fontWeight: isBold? FontWeight.bold: FontWeight.w400,),
+        text: title,
+        color: isBold
+            ? Colors.black
+            : ColorPalette.textColor,
+        fontSize: 15,
+        fontWeight: isBold
+            ? FontWeight.bold
+            : FontWeight.w400,
+      ),
 
-
+      CustomText(
+        text: '$price\$',
+        color: isBold
+            ? Colors.black
+            : ColorPalette.textColor,
+        fontSize: 15,
+        fontWeight: isBold
+            ? FontWeight.bold
+            : FontWeight.w400,
+      ),
     ],
   );
 }

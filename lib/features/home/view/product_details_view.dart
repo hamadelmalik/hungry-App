@@ -101,10 +101,12 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
               productPrice: widget.productPrice,
               isLoading: state is AddToCartLoading,
                 onTap: () {
+                  log('🛒🛒🛒🛒🛒🛒 ADD TO CART BUTTON PRESSED');
+
                   final cubit = context.read<HomeCubit>();
 
-                  final double basePrice = double.tryParse(widget.productPrice) ?? 0;
-                  final double optionPrice = selectedOption?.price ?? 0;
+                  final double basePrice =
+                      double.tryParse(widget.productPrice) ?? 0;
 
                   final cartItem = CartItemModel(
                     itemId: 0,
@@ -112,14 +114,16 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
                     name: "",
                     image: "",
                     quantity: 1,
+                    options: <Map<String, dynamic>>[],
                     spicy: spicyValue,
-                   // optionsByType: selectedOption?.typeId,
-                   // : selectedOption?.id,
-                   // optionPrice: optionPrice,
-                    totalPrice: basePrice + optionPrice,
+                    totalPrice: basePrice,
                   );
 
-                  cubit.addToCart(cartData: cartItem);
+                  log('🛒 CART JSON: ${cartItem.toJson()}');
+
+                  cubit.addToCart(
+                    cartData: cartItem,
+                  );
                 },
 
             ),

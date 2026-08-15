@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hungry/core/network/api_error.dart';
 import 'package:hungry/features/cart/data/model/cart_item_model.dart';
-import 'package:hungry/features/cart/data/model/cart_model.dart';
 import 'package:hungry/features/home/cubit/home_state.dart';
 import 'package:hungry/features/home/data/model/option_model.dart';
 import 'package:hungry/features/home/data/model/option_type.dart';
@@ -23,6 +22,7 @@ class HomeCubit extends Cubit<HomeStates>{
   final HomeRepo homeRepo = HomeRepo();
   final OptionRepo optionRepo = OptionRepo();
   List<OptionType> optionTypes = [];
+  List<OptionModel> selectedOptions = [];
   List<ProductModel>? products;
   List<ProductModel>? allProducts;
   Future<void> getProducts() async {

@@ -1,11 +1,7 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hungry/core/constants/color_palette.dart';
-import 'package:hungry/core/network/api_error.dart';
-import 'package:hungry/core/network/api_services.dart';
-import 'package:hungry/features/auth/repo/Auth/auth_repo.dart';
-import 'package:hungry/features/auth/data/user_model.dart';
-import 'package:hungry/features/auth/repo/profile/profile_repo.dart';
 import 'package:hungry/features/auth/view/widget/guest_mode.dart';
 import 'package:hungry/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:hungry/features/cart/presentation/cubit/cart_state.dart';
@@ -17,79 +13,54 @@ import 'package:hungry/shared/custom_btn.dart';
 import 'package:hungry/shared/custom_snack.dart';
 import 'package:hungry/shared/custom_text.dart';
 
-class CartView extends StatefulWidget {
+class CartView extends StatelessWidget {
   const CartView({super.key});
 
   @override
-  State<CartView> createState() => _CartViewState();
-}
-
-class _CartViewState extends State<CartView> {
-  bool isGuest = false;
-  final apiServices = ApiServices();
-
-  late final profileRepo = ProfileRepo(apiServices: apiServices);
-
-  late final authRepo = AuthRepo(
-    apiServices: apiServices,
-    profileRepo: profileRepo,
-  );
-
-  UserModel? userModel;
-
-  Future<void> getProfileData() async {
-    try {
-      final user = await profileRepo.getProfileData();
-      if (!mounted) return;
-      setState(() {
-        userModel = user;
-      });
-    } catch (e) {
-      String errorMsg = 'Profile Error';
-
-      if (e is ApiError) {
-        throw errorMsg = e.message.toString();
-      }
-
-      ScaffoldMessenger.of(context).showSnackBar(customSnack(errorMsg));
-    }
-  }
-
-  Future<void> autoLogin() async {
-    final user = await authRepo.autoLogin();
-    setState(() => isGuest = authRepo.isGuest);
-    if (user != null) {
-      setState(() => isGuest = authRepo.isGuest);
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    autoLogin();
-
-    context.read<CartCubit>().getCartData();
-  }
-
-  @override
-  @override
   Widget build(BuildContext context) {
-    if (isGuest) {
-      return const GuestModeView();
-    }
-
     return BlocConsumer<CartCubit, CartStates>(
       listener: (context, state) {
-        // conditions
+        if (state is GetCartError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            customSnack(state.message),
+          );
+        }
+
+        if (state is RemoveCartError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            customSnack(state.message),
+          );
+        }
       },
+
       builder: (context, state) {
         final cubit = context.read<CartCubit>();
+
+        if (state is AutoLoginLoading ||
+            state is GetCartLoading) {
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+
+        if (cubit.isGuest) {
+          return const GuestModeView();
+        }
+
+        if (state is GetCartError) {
+          return Scaffold(
+            body: Center(
+              child: Text(state.message),
+            ),
+          );
+        }
+
         final cartResponse = cubit.cartResponse;
 
-        final bool isCartEmpty =
-            cartResponse == null || cartResponse.cartData.items.isEmpty;
-
-        if (isCartEmpty) {
+        if (cartResponse == null ||
+            cartResponse.cartData.items.isEmpty) {
           return const CartEmpty();
         }
 
@@ -97,7 +68,7 @@ class _CartViewState extends State<CartView> {
           backgroundColor: ColorPalette.aje,
 
           appBar: AppBar(
-            backgroundColor: const Color(0xFFF5F6F7),
+            backgroundColor: ColorPalette.aje,
             elevation: 0,
             scrolledUnderElevation: 0,
             centerTitle: true,
@@ -116,9 +87,7 @@ class _CartViewState extends State<CartView> {
                     size: 18,
                     color: Colors.black54,
                   ),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
+                  onPressed: () => Navigator.pop(context),
                 ),
               ),
             ),
@@ -131,100 +100,92 @@ class _CartViewState extends State<CartView> {
                 color: Colors.black,
               ),
             ),
-
-            actions: [
-              Padding(
-                padding: const EdgeInsets.all(8),
-                child: Container(
-                  width: 40,
-                  height: 40,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                  ),
-                  child: IconButton(
-                    padding: EdgeInsets.zero,
-                    icon: const Icon(Icons.more_horiz, color: Colors.black54),
-                    onPressed: () {},
-                  ),
-                ),
-              ),
-            ],
           ),
 
           body: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15),
-            child: Column(
+
+            child: ListView(
               children: [
-                Expanded(
-                  child: ListView(
-                    padding: EdgeInsets.zero,
-                    children: [
-                      ...cartResponse.cartData.items.map((item) {
-                        final index = cartResponse.cartData.items.indexOf(item);
+                ...cartResponse.cartData.items
+                    .asMap()
+                    .entries
+                    .map((entry) {
+                  final index = entry.key;
+                  final item = entry.value;
 
-                        return CustomCartItem(
-                          image: item.image,
-                          text: item.name,
-                          desc: 'xxxx',
-                          number: cubit.quantity![index],
-                          onAdd: () => cubit.onAdd(index),
-                          onMinus: () => cubit.onMinus(index),
-                          onRemove: () => cubit.removeCartItem(item.itemId),
-                        );
-                      }),
+                  return CustomCartItem(
+                    image: item.image,
+                    text: item.name,
+                    desc: 'xxxx',
 
-                      const SizedBox(height: 15),
+                    number: cubit.quantity[index],
 
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          CustomText(
-                            text: cartResponse.cartData.totalPrice
-                                .toStringAsFixed(2),
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ],
-                      ),
+                    onAdd: () {
+                      cubit.onAdd(index);
+                    },
 
-                      const SizedBox(height: 20),
+                    onMinus: () {
+                      cubit.onMinus(index);
+                    },
 
-                      CustomBtn(
-                        heightSize: 45,
-                        widthSize: 120,
-                        backgroundColor: ColorPalette.darkMocha,
-                        text: 'Check Out',
-                        textColor: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => CheckoutView(
-                                totalPrice: cartResponse.cartData.totalPrice
-                                    .toStringAsFixed(2),
+                    onRemove: () {
+                      cubit.removeCartItem(item.itemId);
+                    },
+                  );
+                }),
 
-                                  cartItems: cartResponse.cartData.items.map((item) {
-                                    return OrderItemModel(
-                                      productId: item.productId,
-                                      quantity: item.quantity,
-                                      spicy: item.spicy ,
-                                      totalPrice: item.totalPrice ,
-                                      optionsByType: item.optionsByType ?? {},
-                                    );
-                                }).toList(),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
+                const SizedBox(height: 15),
+
+                CustomText(
+                  text: cartResponse.cartData.totalPrice
+                      .toStringAsFixed(2),
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
                 ),
 
                 const SizedBox(height: 20),
+
+            CustomBtn(
+              heightSize: 45,
+              widthSize: 120,
+              backgroundColor: ColorPalette.darkMocha,
+              text: 'Check Out',
+              textColor: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+
+              onTap: () {
+
+                final orderItems = cartResponse.cartData.items
+                    .map<OrderItemModel>(
+                      (item) => OrderItemModel(
+                    productId: item.productId,
+                    quantity: item.quantity,
+                    spicy: item.spicy,
+                    totalPrice: item.totalPrice,
+                    selectedOptions: item.options,
+                  ),
+                )
+                    .toList();
+
+
+                debugPrint(orderItems.runtimeType.toString());
+
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => CheckoutView(
+                      totalPrice: cartResponse.cartData.totalPrice
+                          .toStringAsFixed(2),
+
+                      cartItems: orderItems,
+                    ),
+                  ),
+                );
+              },
+            ),
               ],
             ),
           ),
