@@ -7,6 +7,12 @@ import 'package:hungry/features/auth/view/login_view.dart';
 import 'package:hungry/features/home/cubit/home_cubit.dart';
 import 'package:hungry/features/cart/data/repo/cart_repo.dart';
 import 'package:hungry/features/cart/presentation/cubit/cart_cubit.dart';
+import 'package:hungry/features/order/data/repo/order_repo.dart';
+import 'package:hungry/features/order/view/cubit/order_cubit.dart';
+import 'package:hungry/features/payment/data/repo/payment_repo.dart';
+import 'package:hungry/features/payment/presentation/cubit/invoice_cubit.dart';
+import 'package:hungry/features/payment/presentation/cubit/payment_cubit.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -16,45 +22,46 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cartRepo = CartRepo();
     return MultiBlocProvider(
       providers: [
         // Auth
-        BlocProvider(
-          create: (_) => AuthCubit(
-            authRepo: authRepo,
-          ),
-        ),
+        BlocProvider(create: (_) => AuthCubit(authRepo: authRepo)),
 
         // Profile
         BlocProvider(
-          create: (_) => ProfileCubit(
-            profileRepo,
-          )..getProfileData(),
+          create: (_) => ProfileCubit(profileRepo)..getProfileData(),
         ),
 
         // Home
-        BlocProvider(
-          create: (_) => HomeCubit()..getProducts(),
-        ),
+        BlocProvider(create: (_) => HomeCubit()..getProducts()),
 
         // Cart
         BlocProvider(
-          create: (_) => CartCubit(
-            cartRepo: CartRepo(),
-            authRepo: authRepo,
-          )..initCart(),
+          create: (_) =>
+              CartCubit(cartRepo: cartRepo, authRepo: authRepo)..initCart(),
         ),
+        //order
+        BlocProvider(
+          create: (_) => OrderCubit(orderRepo: OrderRepo(), cartRepo: cartRepo),
+        ),
+        //payment
+        BlocProvider(
+          create: (context) => PaymentCubit(paymentRepo: PaymentRepo()),
+        ),
+        //invoice
+        BlocProvider(create: (context) => InvoiceCubit(PaymentRepo())),
       ],
 
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'hungerApp',
 
-        theme: ThemeData(
-          scaffoldBackgroundColor: Colors.white,
-        ),
+        theme: ThemeData(scaffoldBackgroundColor: Colors.white),
 
-        home: LoginView(),
+        home: LoginView(
+          //  sessionUrl: 'https://payments.kashier.io/session/...',
+        ),
       ),
     );
   }

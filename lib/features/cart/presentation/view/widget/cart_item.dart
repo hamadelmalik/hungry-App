@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hungry/core/constants/api_constants.dart';
 import 'package:hungry/core/constants/color_palette.dart';
-import 'package:hungry/shared/custom_btn.dart';
 import 'package:hungry/shared/custom_text.dart';
 
 class CustomCartItem extends StatelessWidget {
@@ -30,7 +29,7 @@ class CustomCartItem extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       color: Colors.white,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -59,7 +58,7 @@ class CustomCartItem extends StatelessWidget {
 
             const Gap(10),
 
-            /// الازرار
+            //add mines remove
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -71,7 +70,7 @@ class CustomCartItem extends StatelessWidget {
                       onTap: onMinus,
                       child: CircleAvatar(
                         radius: 18,
-                        backgroundColor: ColorPalette.primaryColor,
+                        backgroundColor: ColorPalette.brownLight,
                         child: const Icon(CupertinoIcons.minus,
                             color: Colors.white),
                       ),
@@ -91,22 +90,21 @@ class CustomCartItem extends StatelessWidget {
                       onTap: onAdd,
                       child: CircleAvatar(
                         radius: 18,
-                        backgroundColor: ColorPalette.primaryColor,
+                        backgroundColor: ColorPalette.brownLight,
                         child:
                         const Icon(CupertinoIcons.add, color: Colors.white),
                       ),
                     ),
+                    const Gap(10),
+                    //remove
+                    GestureDetector(
+                      onTap: onRemove,
+                      child: const Icon(CupertinoIcons.delete, color: Colors.red),
+                    ),
                   ],
                 ),
 
-                /// زر Remove
-                CustomBtn(
-                  heightSize: 40,
-                  widthSize: 110,
-                  backgroundColor: ColorPalette.primaryColor,
-                  onTap: onRemove,
-                  text: 'Remove',
-                ),
+
               ],
             ),
           ],

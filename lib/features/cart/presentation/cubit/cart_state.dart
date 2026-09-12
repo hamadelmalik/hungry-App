@@ -28,3 +28,11 @@ class AutoLoginError extends CartStates{
   String message='some thing went wrong';
   AutoLoginError({required this.message});
 }
+//clear cart
+
+class ClearCartLoading extends CartStates{}
+class ClearCartSuccess extends CartStates{}
+class ClearCartError extends CartStates{
+  String message='some thing went wrong';
+  ClearCartError({required this.message});
+}

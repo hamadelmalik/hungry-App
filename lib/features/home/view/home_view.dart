@@ -101,7 +101,7 @@ class HomeView extends StatelessWidget  {
                         childCount: cubitHome.products?.length ?? 6,
                             (context, index) {
                           final product = cubitHome.products?[index];
-                          log("Products Count: ${cubitHome.products?.length}");
+                         // log("Products Count: ${cubitHome.products?.length}");
                           if (product == null) {
                             return CupertinoActivityIndicator();
                           }

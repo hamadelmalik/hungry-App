@@ -18,6 +18,8 @@ class ApiServices {
 
   Future<dynamic> post(String endPoint, dynamic body) async {
     try {
+      log('🌐 POST URL: ${dioClint.dio.options.baseUrl}$endPoint');
+
       final response = await dioClint.dio.post(
           endPoint,
           data: body,
@@ -35,9 +37,9 @@ class ApiServices {
 
 
     } on DioException catch (e) {
-      log("🔥 DIO ERROR RESPONSE: ${e.response?.data}");
-      log("🔥 DIO ERROR STATUS: ${e.response?.statusCode}");
-      log("🔥 DIO ERROR MESSAGE: ${e.message}");
+      log("🔥🔥🔥 DIO ERROR RESPONSE: ${e.response?.data}");
+      log("🔥🔥🔥 DIO ERROR STATUS: ${e.response?.statusCode}");
+      log("🔥🔥🔥 DIO ERROR URL: ${e.requestOptions.uri}");
 
       throw ApiExpectations.handleError(e);
     }

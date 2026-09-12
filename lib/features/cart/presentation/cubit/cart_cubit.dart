@@ -1,3 +1,4 @@
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hungry/core/network/api_error.dart';
 import 'package:hungry/features/auth/repo/Auth/auth_repo.dart';
@@ -32,12 +33,6 @@ class CartCubit extends Cubit<CartStates> {
   // =========================
 
   Future<void> initCart() async {
-    await autoLogin();
-
-    if (isGuest) {
-      return;
-    }
-
     await getCartData();
   }
 
@@ -49,10 +44,8 @@ class CartCubit extends Cubit<CartStates> {
     emit(AutoLoginLoading());
 
     try {
-      final user = await authRepo.autoLogin();
-
+      await authRepo.autoLogin();
       isGuest = authRepo.isGuest;
-
       emit(AutoLoginSuccess());
     } catch (e) {
       emit(
@@ -139,6 +132,31 @@ class CartCubit extends Cubit<CartStates> {
     } catch (e) {
       emit(
         RemoveCartError(
+          message: e is ApiError
+              ? e.message.toString()
+              : e.toString(),
+        ),
+      );
+    }
+  }
+
+
+
+
+
+  Future<void> clearCart() async {
+    emit(ClearCartLoading());
+
+    try {
+      await cartRepo.clearCart();
+
+      // Refresh cart data immediately
+      await getCartData();
+
+      emit(ClearCartSuccess());
+    } catch (e) {
+      emit(
+        ClearCartError(
           message: e is ApiError
               ? e.message.toString()
               : e.toString(),

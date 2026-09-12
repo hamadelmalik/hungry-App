@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:hungry/core/constants/color_palette.dart';
 import 'package:hungry/features/cart/data/model/cart_item_model.dart';
+import 'package:hungry/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:hungry/features/home/cubit/home_cubit.dart';
 import 'package:hungry/features/home/cubit/home_state.dart';
 import 'package:hungry/features/home/data/model/option_model.dart';
@@ -42,15 +43,19 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
     return BlocConsumer<HomeCubit, HomeStates>(
       listener: (context, state) {
         if (state is AddToCartSuccess) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('Add to Cart Success')));
+          context.read<CartCubit>().getCartData();
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Add to Cart Success'),
+            ),
+          );
         }
 
         if (state is AddToCartError) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(customSnack(state.message));
+          ScaffoldMessenger.of(context).showSnackBar(
+            customSnack(state.message),
+          );
         }
       },
       //conditions//

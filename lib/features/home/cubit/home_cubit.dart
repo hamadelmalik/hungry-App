@@ -26,6 +26,7 @@ class HomeCubit extends Cubit<HomeStates>{
   List<ProductModel>? products;
   List<ProductModel>? allProducts;
   Future<void> getProducts() async {
+    log('🔥 getProducts called');
     emit(HomeLoading());
 
     try {

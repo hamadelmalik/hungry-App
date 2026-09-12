@@ -5,12 +5,20 @@ import 'package:hungry/features/order/data/model/order_model.dart';
 
 class OrderRepo {
   final ApiServices apiServices = ApiServices();
-
+//----------createOrder----------
   Future<OrderModel?> createOrder(OrderModel order) async {
     try {
       final response = await apiServices.post(
         '/orders',
         order.toJson(),
+          // {
+          //   "status": true,
+          //   "order": {
+          //     "id": 17,
+          //     "total": 250,
+          //     "payment_method": "kashier"
+          //   }
+          // }
       );
 
       log('🔥 RAW RESPONSE: $response');
@@ -74,6 +82,49 @@ class OrderRepo {
       throw ApiError(message: e.toString());
     }
   }
+// ---------- get orders ----------
 
+  Future<List<OrderModel>> getOrders() async {
+    try {
+      final response = await apiServices.get('/orders');
 
+      log('🔥 GET ORDERS RESPONSE: $response');
+
+      if (response['status'] == true) {
+        final data = response['orders'];
+
+        if (data == null) {
+          throw ApiError(
+            message: 'Orders data not found',
+          );
+        }
+
+        return data
+            .map(
+              (order) => OrderModel.fromJson(
+            Map<String, dynamic>.from(order),
+          ),
+        )
+            .toList();
+      }
+
+      log(
+        '❌ Orders Error: '
+            '${response['message'] ?? 'Unknown error'}',
+      );
+
+      return [];
+    } catch (e, stack) {
+      log('🔥 GET ORDERS ERROR: $e');
+      log('STACK: $stack');
+
+      if (e is ApiError) {
+        rethrow;
+      }
+
+      throw ApiError(
+        message: e.toString(),
+      );
+    }
+  }
 }

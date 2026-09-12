@@ -8,6 +8,11 @@ abstract class ColorPalette {
   static const Color darkMocha =  Color(0xFF332723);
   static const Color deepMidnightBlue =  Color(0xFF091C2A);
   static const Color primaryColor =  Color(0xFFE93918);
+  static const cream1 = Color(0xFFE7E3DB);
+  static const cream2 = Color(0xFFE2D8CE);
+  static const beige = Color(0xFFB6A593);
+  static const brownLight = Color(0xFF685B4C);
+  static const brownDark = Color(0xFF382E25);
 
 
 
