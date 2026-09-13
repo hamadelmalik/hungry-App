@@ -19,6 +19,7 @@ import 'package:hungry/features/order/view/widget/order_details_widget.dart';
 import 'package:hungry/features/payment/presentation/cubit/payment_cubit.dart';
 import 'package:hungry/features/payment/presentation/cubit/payment_state.dart';
 import 'package:hungry/features/payment/presentation/view/Kashier_view.dart';
+import 'package:hungry/features/payment/presentation/view/invoice_view.dart';
 import 'package:hungry/shared/custom_snack.dart';
 
 import 'package:hungry/shared/custom_text.dart';
@@ -70,13 +71,12 @@ class _CheckoutViewState extends State<CheckoutView> {
               if (selectedMethod == 'cash') {
                 context.read<CartCubit>().clearCart();
 
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                      'Order created successfully 🎉',
-                      style: TextStyle(color: Colors.white),
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => InvoiceView(
+                      orderId: order.id!,
                     ),
-                    backgroundColor: Colors.green,
                   ),
                 );
               }
