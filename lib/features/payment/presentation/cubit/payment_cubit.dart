@@ -8,7 +8,7 @@ class PaymentCubit extends Cubit<PaymentState> {
   PaymentCubit({
     required this.paymentRepo,
   }) : super(PaymentInitial());
-
+//-------createPayment---
   Future<void> createPayment(int orderId) async {
     emit(PaymentLoading());
 
@@ -21,6 +21,24 @@ class PaymentCubit extends Cubit<PaymentState> {
       }
 
       emit(PaymentSuccess(sessionUrl));
+    } catch (e) {
+      emit(PaymentError(e.toString()));
+    }
+  }
+
+  //---createSdkPayment------------
+  Future<void> createSdkPayment(int orderId) async {
+    emit(PaymentLoading());
+
+    try {
+      final sessionId = await paymentRepo.createSdkPayment(orderId);
+
+      if (sessionId.isEmpty) {
+        emit(PaymentError('Failed to create SDK payment'));
+        return;
+      }
+
+      emit(PaymentSuccess(sessionId));
     } catch (e) {
       emit(PaymentError(e.toString()));
     }

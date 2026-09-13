@@ -53,12 +53,45 @@ class PaymentRepo {
     }
   }
 
+  //------------createSdkPayment------------
+  //------------createSdkPayment------------
+  Future<String> createSdkPayment(int orderId) async {
+    final response = await apiServices.post(
+      '/kashier/sdk-payment',
+      {
+        'order_id': orderId,
+      },
+    );
+
+    log('🔥 SDK PAYMENT RESPONSE: $response');
+
+    if (response is! Map) {
+      throw ApiError(
+        message: 'Invalid SDK payment response',
+      );
+    }
+
+    final data = Map<String, dynamic>.from(response);
+
+    if (data['success'] == true && data['sessionId'] != null) {
+      final sessionId = data['sessionId'].toString();
+
+      log('🔥 KASHIER SESSION ID: $sessionId');
+
+      return sessionId;
+    }
+
+    throw ApiError(
+      message: data['message']?.toString() ??
+          'Failed to create SDK payment',
+    );
+  }
   //------------getInvoice--------------
   Future<InvoiceModel> getInvoice(int orderId) async {
     final response = await apiServices.get('/orders/$orderId/invoice');
 
-    print('🔥 INVOICE RESPONSE: $response');
-    print('🔥 RESPONSE TYPE: ${response.runtimeType}');
+    log('🔥 INVOICE RESPONSE: $response');
+    log('🔥 RESPONSE TYPE: ${response.runtimeType}');
 
     return InvoiceModel.fromJson(response['invoice']);
   }
